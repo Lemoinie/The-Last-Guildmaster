@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Last Guildmaster</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="dark-theme">
+    <div id="app">
+        <!-- Sidebar Navigation -->
+        <aside id="sidebar" class="glass-panel">
+            <div class="logo">
+                <h1>Guildmaster</h1>
+            </div>
+            <nav>
+                <button class="nav-btn active" data-view="tavern">Tavern</button>
+                <button class="nav-btn" data-view="inn">Inn</button>
+                <button class="nav-btn" data-view="storage">Storage</button>
+                <button class="nav-btn" data-view="expedition">Expeditions</button>
+                <button class="nav-btn" data-view="market">Market</button>
+                <button class="nav-btn" data-view="blacksmith">Blacksmith</button>
+                <button class="nav-btn" data-view="garden">Garden</button>
+                <button class="nav-btn" data-view="alchemist">Alchemist</button>
+                <button class="nav-btn" data-view="church">Church</button>
+            </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main id="main-content">
+            <header id="top-bar" class="glass-panel">
+                <div class="resource-pill">
+                    <span class="label">Gold:</span>
+                    <span id="gold-value" class="value accent-text">1000</span>
+                </div>
+                <div class="resource-pill">
+                    <span class="label">Renown:</span>
+                    <span id="renown-value" class="value">0</span>
+                </div>
+                <div class="resource-pill">
+                    <span class="label">Adventurers:</span>
+                    <span id="adventurer-count" class="value">0 / 10</span>
+                </div>
+            </header>
+
+            <section id="view-container" class="glass-panel">
+                <!-- Building views will be injected here -->
+                <div id="loading-screen">
+                    <p>Initializing Guild...</p>
+                </div>
+            </section>
+        </main>
+
+        <!-- Notification Toast System -->
+        <div id="notification-container"></div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/state.js" type="module"></script>
+    <script src="js/engine.js" type="module"></script>
+    <script src="js/ui.js" type="module"></script>
+</body>
+</html>
