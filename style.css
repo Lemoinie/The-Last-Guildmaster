@@ -4,8 +4,10 @@
     --glass-border: rgba(255, 255, 255, 0.08);
     --text-primary: #f8fafc;
     --text-secondary: #94a3b8;
-    --accent-primary: #7dd3fc; /* Cold spiritual blue */
-    --accent-red: #ef4444;    /* Colder red */
+    --accent-primary: #7dd3fc;
+    /* Cold spiritual blue */
+    --accent-red: #ef4444;
+    /* Colder red */
     --accent-glow: 0 0 12px rgba(125, 211, 252, 0.4);
     --glass-blur: blur(20px);
     --sidebar-width: 240px;
@@ -32,7 +34,7 @@ body {
     height: 100vh;
     padding: 20px;
     gap: 20px;
-    background-image: 
+    background-image:
         radial-gradient(circle at 20% 30%, rgba(125, 211, 252, 0.04) 0%, transparent 45%),
         radial-gradient(circle at 80% 70%, rgba(30, 41, 59, 0.1) 0%, transparent 45%);
 }
@@ -145,8 +147,16 @@ nav {
 }
 
 /* Building Backgrounds (Removed as requested) */
-.bg-tavern, .bg-inn, .bg-storage, .bg-expedition, .bg-market, .bg-blacksmith, .bg-garden, .bg-alchemist, .bg-church { 
-    background-image: none !important; 
+.bg-tavern,
+.bg-inn,
+.bg-storage,
+.bg-expedition,
+.bg-market,
+.bg-blacksmith,
+.bg-garden,
+.bg-alchemist,
+.bg-church {
+    background-image: none !important;
 }
 
 /* Scrollbar */
@@ -229,7 +239,8 @@ nav {
 }
 
 #tos-overlay {
-    z-index: 500; /* Always on top of other overlays */
+    z-index: 500;
+    /* Always on top of other overlays */
 }
 
 #app.hidden {
@@ -263,7 +274,7 @@ nav {
 .menu-overlay-gradient {
     position: absolute;
     inset: 0;
-    background: radial-gradient(ellipse at center bottom, rgba(0,0,0,0.6) 0%, transparent 70%);
+    background: radial-gradient(ellipse at center bottom, rgba(0, 0, 0, 0.6) 0%, transparent 70%);
     z-index: 1;
     pointer-events: none;
 }
@@ -294,8 +305,15 @@ nav {
 }
 
 @keyframes floatOrnament {
-    0%, 100% { transform: translateY(0); }
-    50%       { transform: translateY(-8px); }
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
 }
 
 .menu-game-title {
@@ -353,7 +371,9 @@ nav {
 .menu-btn::before {
     content: '';
     position: absolute;
-    left: 0; top: 0; bottom: 0;
+    left: 0;
+    top: 0;
+    bottom: 0;
     width: 3px;
     background: var(--accent-primary);
     box-shadow: 0 0 10px var(--accent-primary);
@@ -362,7 +382,9 @@ nav {
     border-radius: 0 2px 2px 0;
 }
 
-.menu-btn:hover::before { transform: scaleY(1); }
+.menu-btn:hover::before {
+    transform: scaleY(1);
+}
 
 .menu-btn:hover {
     background: rgba(125, 211, 252, 0.05);
@@ -378,7 +400,9 @@ nav {
     color: var(--accent-primary);
 }
 
-.menu-btn-primary::before { transform: scaleY(1); }
+.menu-btn-primary::before {
+    transform: scaleY(1);
+}
 
 .menu-btn-danger:hover {
     background: rgba(255, 49, 49, 0.06);
@@ -387,8 +411,13 @@ nav {
     box-shadow: 0 0 20px rgba(255, 49, 49, 0.08);
 }
 
-.menu-btn-danger:hover::before { background: var(--accent-red); }
-.menu-btn-danger::before { background: var(--accent-red); }
+.menu-btn-danger:hover::before {
+    background: var(--accent-red);
+}
+
+.menu-btn-danger::before {
+    background: var(--accent-red);
+}
 
 .menu-btn-icon {
     font-size: 1.1rem;
@@ -396,7 +425,10 @@ nav {
     text-align: center;
 }
 
-.menu-btn-label { flex: 1; text-align: left; }
+.menu-btn-label {
+    flex: 1;
+    text-align: left;
+}
 
 .menu-btn-arrow {
     opacity: 0;
@@ -414,13 +446,45 @@ nav {
 .menu-footer {
     display: flex;
     align-items: center;
-    gap: 10px;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: auto;
     font-size: 0.78rem;
-    color: rgba(255,255,255,0.25);
+    color: rgba(255, 255, 255, 0.25);
     letter-spacing: 1px;
 }
 
-.menu-sep { color: rgba(255,255,255,0.15); }
+.menu-footer-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.update-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.status-checking { color: var(--accent-primary); }
+.status-checking .status-icon { animation: spin 2s linear infinite; }
+.status-up-to-date { color: #10b981; }
+.status-update-available { 
+    color: #f59e0b;
+    text-shadow: 0 0 8px rgba(245, 158, 11, 0.3);
+}
+.status-error { color: #64748b; }
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.menu-sep {
+    color: rgba(255, 255, 255, 0.15);
+}
 
 .menu-legal-link {
     background: none;
@@ -434,7 +498,9 @@ nav {
     font-family: inherit;
 }
 
-.menu-legal-link:hover { color: var(--accent-primary); }
+.menu-legal-link:hover {
+    color: var(--accent-primary);
+}
 
 /* Sidebar back-to-menu button */
 .sidebar-footer {
@@ -446,7 +512,7 @@ nav {
 .sidebar-menu-btn {
     width: 100%;
     background: transparent;
-    border: 1px solid rgba(255,255,255,0.08);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     color: var(--text-secondary);
     padding: 10px 14px;
     border-radius: 8px;
@@ -458,9 +524,9 @@ nav {
 }
 
 .sidebar-menu-btn:hover {
-    background: rgba(255,255,255,0.05);
+    background: rgba(255, 255, 255, 0.05);
     color: var(--text-primary);
-    border-color: rgba(255,255,255,0.15);
+    border-color: rgba(255, 255, 255, 0.15);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -471,7 +537,7 @@ nav {
     align-items: center;
     justify-content: center;
     padding: 30px;
-    background: rgba(0,0,0,0.7);
+    background: rgba(0, 0, 0, 0.7);
     backdrop-filter: blur(6px);
 }
 
@@ -490,7 +556,7 @@ nav {
     display: flex;
     flex-direction: column;
     border: 1px solid rgba(125, 211, 252, 0.15);
-    box-shadow: 0 0 80px rgba(125, 211, 252, 0.08), 0 30px 80px rgba(0,0,0,0.9);
+    box-shadow: 0 0 80px rgba(125, 211, 252, 0.08), 0 30px 80px rgba(0, 0, 0, 0.9);
     overflow: hidden;
 }
 
@@ -525,7 +591,7 @@ nav {
 .tos-tabs {
     display: flex;
     border-bottom: 1px solid var(--glass-border);
-    background: rgba(0,0,0,0.2);
+    background: rgba(0, 0, 0, 0.2);
 }
 
 .tos-tab {
@@ -545,7 +611,7 @@ nav {
 
 .tos-tab:hover {
     color: var(--text-primary);
-    background: rgba(255,255,255,0.03);
+    background: rgba(255, 255, 255, 0.03);
 }
 
 .tos-tab.active {
@@ -561,7 +627,10 @@ nav {
     overflow: hidden;
 }
 
-.tos-panel.active { display: flex; flex-direction: column; }
+.tos-panel.active {
+    display: flex;
+    flex-direction: column;
+}
 
 .tos-scrollarea {
     flex: 1;
@@ -603,12 +672,31 @@ nav {
 }
 
 .tos-scrollarea code {
-    background: rgba(255,255,255,0.07);
+    background: rgba(255, 255, 255, 0.07);
     padding: 2px 6px;
     border-radius: 4px;
     font-family: 'Courier New', monospace;
     font-size: 0.82em;
     color: var(--accent-primary);
+}
+
+.tos-scrollarea table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: 0.82rem;
+}
+
+.tos-scrollarea th, .tos-scrollarea td {
+    border: 1px solid var(--glass-border);
+    padding: 10px 12px;
+    text-align: left;
+}
+
+.tos-scrollarea th {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+    font-weight: 600;
 }
 
 .tos-summary-box {
@@ -624,7 +712,10 @@ nav {
     color: var(--text-primary);
 }
 
-.summary-icon { font-size: 1.1rem; flex-shrink: 0; }
+.summary-icon {
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
 
 .tos-warning-box {
     padding: 12px 16px;
@@ -645,7 +736,7 @@ nav {
 .tos-footer {
     padding: 20px 32px;
     border-top: 1px solid var(--glass-border);
-    background: rgba(0,0,0,0.25);
+    background: rgba(0, 0, 0, 0.25);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -671,12 +762,14 @@ nav {
     user-select: none;
 }
 
-.tos-checkbox-label input[type="checkbox"] { display: none; }
+.tos-checkbox-label input[type="checkbox"] {
+    display: none;
+}
 
 .custom-checkbox {
     width: 20px;
     height: 20px;
-    border: 2px solid rgba(255,255,255,0.2);
+    border: 2px solid rgba(255, 255, 255, 0.2);
     border-radius: 4px;
     flex-shrink: 0;
     display: grid;
@@ -684,13 +777,13 @@ nav {
     transition: all 0.2s ease;
 }
 
-.tos-checkbox-label input:checked + .custom-checkbox {
+.tos-checkbox-label input:checked+.custom-checkbox {
     background: var(--accent-primary);
     border-color: var(--accent-primary);
     box-shadow: 0 0 10px rgba(125, 211, 252, 0.4);
 }
 
-.tos-checkbox-label input:checked + .custom-checkbox::after {
+.tos-checkbox-label input:checked+.custom-checkbox::after {
     content: '✓';
     font-size: 13px;
     color: black;
@@ -731,7 +824,7 @@ nav {
     padding: 12px 24px;
     background: transparent;
     color: var(--text-secondary);
-    border: 1px solid rgba(255,255,255,0.15);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 8px;
     font-family: 'Inter', sans-serif;
     font-size: 0.9rem;
@@ -741,9 +834,9 @@ nav {
 }
 
 .btn-secondary:hover {
-    background: rgba(255,255,255,0.06);
+    background: rgba(255, 255, 255, 0.06);
     color: var(--text-primary);
-    border-color: rgba(255,255,255,0.25);
+    border-color: rgba(255, 255, 255, 0.25);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -755,7 +848,7 @@ nav {
     align-items: center;
     justify-content: center;
     padding: 30px;
-    background: rgba(0,0,0,0.6);
+    background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(4px);
 }
 
@@ -763,8 +856,9 @@ nav {
     position: relative;
     z-index: 1;
     width: 100%;
-    max-width: 680px; /* Increased to accommodate tabs */
-    border: 1px solid rgba(255,255,255,0.1);
+    max-width: 680px;
+    /* Increased to accommodate tabs */
+    border: 1px solid rgba(255, 255, 255, 0.1);
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -808,9 +902,10 @@ nav {
 
 .modal-close-btn {
     background: transparent;
-    border: 1px solid rgba(255,255,255,0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     color: var(--text-secondary);
-    width: 32px; height: 32px;
+    width: 32px;
+    height: 32px;
     border-radius: 6px;
     cursor: pointer;
     font-size: 0.9rem;
@@ -821,7 +916,7 @@ nav {
 }
 
 .modal-close-btn:hover {
-    background: rgba(255,49,49,0.1);
+    background: rgba(255, 49, 49, 0.1);
     border-color: var(--accent-red);
     color: var(--accent-red);
 }
@@ -839,7 +934,7 @@ nav {
     display: flex;
     justify-content: flex-end;
     gap: 12px;
-    background: rgba(0,0,0,0.2);
+    background: rgba(0, 0, 0, 0.2);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -847,9 +942,11 @@ nav {
    ───────────────────────────────────────────────────────────────────────────── */
 .settings-layout {
     display: flex;
-    flex-direction: row !important; /* Force side-by-side layout */
+    flex-direction: row !important;
+    /* Force side-by-side layout */
     padding: 0 !important;
-    height: 460px; /* Increased height */
+    height: 460px;
+    /* Increased height */
 }
 
 .settings-tabs {
@@ -892,7 +989,9 @@ nav {
     background: rgba(255, 255, 255, 0.02);
 }
 
-.settings-tab:hover .tab-icon { opacity: 1; }
+.settings-tab:hover .tab-icon {
+    opacity: 1;
+}
 
 .settings-tab.active {
     color: var(--accent-primary);
@@ -931,8 +1030,15 @@ nav {
 }
 
 @keyframes panelFadeIn {
-    from { opacity: 0; transform: translateY(4px); }
-    to   { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .settings-panel.active {
@@ -1029,7 +1135,8 @@ nav {
 
 .styled-range::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: 18px; height: 18px;
+    width: 18px;
+    height: 18px;
     border-radius: 50%;
     background: var(--accent-primary);
     box-shadow: 0 0 15px var(--accent-primary);
@@ -1092,20 +1199,22 @@ nav {
 .toggle-slider::before {
     content: '';
     position: absolute;
-    width: 20px; height: 20px;
-    left: 3px; top: 3px;
+    width: 20px;
+    height: 20px;
+    left: 3px;
+    top: 3px;
     background: #475569;
     border-radius: 50%;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
-.toggle-switch input:checked + .toggle-slider {
+.toggle-switch input:checked+.toggle-slider {
     background: rgba(125, 211, 252, 0.15);
     border-color: var(--accent-primary);
 }
 
-.toggle-switch input:checked + .toggle-slider::before {
+.toggle-switch input:checked+.toggle-slider::before {
     transform: translateX(32px);
     background: var(--accent-primary);
     box-shadow: 0 0 15px var(--accent-primary);

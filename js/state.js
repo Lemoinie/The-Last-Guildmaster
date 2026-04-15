@@ -21,31 +21,42 @@ export const initialState = {
     expeditions: [],
     unlockedBuildings: ['tavern', 'inn', 'storage'],
     logs: ['Welcome, Guildmaster. Your journey begins.'],
-    lastSave: Date.now()
+    lastSave: Date.now(),
+    debugConsole: false
 };
 
 class StateManager {
     constructor() {
-        this.state = this.load();
+        this.state = initialState;
         this.listeners = [];
+        this.init();
     }
 
-    load() {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved) {
-            try {
-                const parsed = JSON.parse(saved);
-                return { ...initialState, ...parsed };
-            } catch (e) {
-                console.error('Failed to parse save data', e);
-                return { ...initialState };
+    async init() {
+        if (window.electronAPI?.loadGame) {
+            const saved = await window.electronAPI.loadGame();
+            if (saved) {
+                this.state = { ...initialState, ...saved };
+                console.log('State loaded from file system');
+            }
+        } else {
+            // Fallback to localStorage if not in Electron context
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                this.state = { ...initialState, ...JSON.parse(saved) };
             }
         }
-        return { ...initialState };
+        this.notify();
     }
 
-    save() {
+    async save() {
         this.state.lastSave = Date.now();
+        
+        if (window.electronAPI?.saveGame) {
+            await window.electronAPI.saveGame(this.state);
+        }
+        
+        // Keep localStorage as backup
         localStorage.setItem(STORAGE_KEY, JSON.stringify(this.state));
         this.notify();
     }
@@ -55,9 +66,9 @@ class StateManager {
         this.save();
     }
 
-    update(updater) {
+    async update(updater) {
         updater(this.state);
-        this.save();
+        await this.save();
     }
 
     subscribe(listener) {

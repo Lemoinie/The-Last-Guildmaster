@@ -9,6 +9,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <!-- Markdown Parser -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body class="dark-theme">
 
@@ -32,81 +34,21 @@
             <!-- ToS Content -->
             <div id="tos-panel" class="tos-panel active" role="tabpanel" aria-labelledby="tab-tos">
                 <div class="tos-scrollarea" id="tos-scroll">
-                    <h2>1. Acceptance of Terms</h2>
-                    <p>By downloading, installing, or running <em>The Last Guildmaster</em> (the "Game"), you agree to be bound by these Terms of Service. If you do not agree, do not use the Game.</p>
-
-                    <h2>2. The Game as a Platform & Engine</h2>
-                    <p><em>The Last Guildmaster</em> is designed as a <strong>moddable platform and engine</strong>. Its core functionality serves as a runtime environment for official content and user-created modules ("mods"). The core engine is open-source under the <strong>Apache License 2.0</strong>.</p>
-
-                    <h2>3. User Generated Content (UGC)</h2>
-                    <ul>
-                        <li><strong>Ownership:</strong> You retain full intellectual property rights over any mod logic, scripts, assets, or content you create.</li>
-                        <li><strong>License Grant:</strong> By distributing or running your mods within the Game, you grant the Game a <strong>perpetual, worldwide, royalty-free, non-exclusive license</strong> to execute, display, and distribute your mods as part of the runtime.</li>
-                        <li><strong>No Endorsement:</strong> Publishing a mod does not imply endorsement by the developers.</li>
-                    </ul>
-
-                    <h2>4. Safety Clause</h2>
-                    <p>You agree that your mods <strong>must not</strong> contain malicious code, viruses, spyware, or illegal content; violate any applicable law; include content harmful to minors; or attempt to tamper with the Game's core security or save systems.</p>
-
-                    <h2>5. Disclaimer of Liability for Third-Party Modules</h2>
-                    <p>The developers are <strong>not responsible</strong> for crashes, data corruption, or performance issues caused by third-party mods. You install and run third-party mods entirely at your own risk.</p>
-
-                    <h2>6. Disclaimer of Warranties</h2>
-                    <p>The Game is provided <strong>"AS IS"</strong> under the Apache License 2.0, without warranties of any kind, express or implied.</p>
+                    <p class="loading-text">Loading Terms of Service...</p>
                 </div>
             </div>
 
             <!-- Modding Policy Content -->
             <div id="modding-panel" class="tos-panel" role="tabpanel" aria-labelledby="tab-modding">
-                <div class="tos-scrollarea">
-                    <h2>1. Version Status & Breaking Changes</h2>
-                    <p>The game is at <strong>version 0.1.0 (Early Alpha)</strong>. The core API, module schema, and engine interfaces are <strong>unstable</strong>. Breaking changes are expected in future updates without backward-compatibility guarantees until v1.0.0.</p>
-
-                    <h2>2. Fair Play Policy</h2>
-                    <ul>
-                        <li><strong>No Cheating:</strong> Modifying game state to gain unfair advantages in competitive modules is prohibited.</li>
-                        <li><strong>No Exploits:</strong> Deliberately exploiting bugs to bypass intended gameplay systems is not permitted.</li>
-                        <li><strong>No Unauthorized Monetization:</strong> You may not sell or commercially distribute the <em>core engine</em> itself.</li>
-                        <li><strong>No Impersonation:</strong> Do not present your mod as an official release.</li>
-                    </ul>
-
-                    <h2>3. Attribution Rule (Apache 2.0)</h2>
-                    <p>Any mod, fork, or derivative work based on this engine must include a clear attribution notice:</p>
-                    <blockquote>"This mod is built using The Last Guildmaster Engine, licensed under the Apache License 2.0."</blockquote>
-                    <p>You must preserve all copyright and attribution notices in source files. Modified files must be clearly marked as changed.</p>
-
-                    <h2>4. Mod Distribution Guidelines</h2>
-                    <p>Publicly distributed mods should include a <code>README.md</code> describing their purpose, dependencies, and version compatibility. Mods must not bundle or redistribute the core engine source without proper attribution.</p>
+                <div class="tos-scrollarea" id="modding-scroll">
+                    <p class="loading-text">Loading Modding Policy...</p>
                 </div>
             </div>
 
             <!-- Privacy Policy Content -->
             <div id="privacy-panel" class="tos-panel" role="tabpanel" aria-labelledby="tab-privacy">
-                <div class="tos-scrollarea">
-                    <h2>1. Data We Collect</h2>
-                    <ul>
-                        <li><strong>Basic Hardware Specs:</strong> GPU model, RAM, OS version — for performance optimization only, stored locally.</li>
-                        <li><strong>Crash Logs:</strong> Stored locally; transmitted only with your explicit opt-in consent.</li>
-                        <li><strong>Local Save Data:</strong> Stored only on your device in <code>%APPDATA%\the-last-guildmaster</code>. Never transmitted.</li>
-                    </ul>
-                    <p>We do <strong>not</strong> collect names, email addresses, payment info, or any cross-app data.</p>
-
-                    <h2>2. Your Rights</h2>
-                    <ul>
-                        <li><strong>Right to Access:</strong> Request a summary of data associated with your use.</li>
-                        <li><strong>Right to Deletion ("Right to Be Forgotten"):</strong> Delete local save data from <code>%APPDATA%\the-last-guildmaster\</code>, or contact us and we'll process your request within 30 days.</li>
-                        <li><strong>Right to Opt-Out:</strong> Disable crash log reporting anytime in the Settings menu.</li>
-                    </ul>
-
-                    <h2>3. Minor Protection Clause</h2>
-                    <div class="tos-warning-box">
-                        ⚠️ <strong>Age Restriction:</strong> This game is <strong>not intended for users under 13</strong> (or <strong>under 16 in the EU</strong>). By continuing, you confirm you meet the minimum age requirement for your jurisdiction.
-                    </div>
-
-                    <h2>4. Changes to This Policy</h2>
-                    <p>We may update this Privacy Policy as the Game develops. Continued use constitutes acceptance. Contact us at <strong>[your-contact@email.com]</strong> for privacy inquiries or data deletion requests.</p>
-
-                    <p class="tos-version-note"><em>Effective Date: April 15, 2026 · Version 0.1.0 · Apache License 2.0</em></p>
+                <div class="tos-scrollarea" id="privacy-scroll">
+                    <p class="loading-text">Loading Privacy Policy...</p>
                 </div>
             </div>
 
@@ -164,9 +106,14 @@
 
             <!-- Version / Legal Footer -->
             <div class="menu-footer">
-                <span class="menu-version">v0.1.0 Early Alpha</span>
-                <span class="menu-sep">·</span>
-                <span class="menu-license">Apache License 2.0</span>
+                <div id="update-status" class="update-status status-checking">
+                    <span class="status-icon">⟳</span> Checking for updates...
+                </div>
+                <div class="menu-footer-info">
+                    <span class="menu-version">v0.1.0 Early Alpha</span>
+                    <span class="menu-sep">·</span>
+                    <span class="menu-license">Apache License 2.0</span>
+                </div>
             </div>
         </div>
 
@@ -281,6 +228,16 @@
                             </div>
                             <label class="toggle-switch">
                                 <input type="checkbox" id="setting-crash-log">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <label for="setting-debug-console">Developer Debug Console</label>
+                                <p class="setting-desc">Open an external console for real-time logs (Modders only).</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="setting-debug-console">
                                 <span class="toggle-slider"></span>
                             </label>
                         </div>

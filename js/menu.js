@@ -1,9 +1,8 @@
-/**
- * menu.js — Main Menu & ToS Controller
- * Handles: ToS acceptance flow, main menu navigation, settings, credits, exit.
- */
+import { Logger } from './logger.js';
 
 const TOS_ACCEPTED_KEY = 'tlg_tos_accepted_v1';
+const APP_VERSION = '0.1.0';
+const VERSION_URL = 'https://raw.githubusercontent.com/Lemoinie/The-Last-Guildmaster/main/package.json';
 
 // ─── Layer References ────────────────────────────────────────────────────────
 const tosOverlay     = document.getElementById('tos-overlay');
@@ -33,21 +32,44 @@ function fadeOut(el, callback) {
 }
 
 // ─── ToS Flow ────────────────────────────────────────────────────────────────
-function initTos() {
+async function initTos() {
     // Always initialize listeners so tabs/footer work during re-reads
     setupTosTabs();
     setupTosFooter();
 
-    const tosAccepted = localStorage.getItem(TOS_ACCEPTED_KEY);
+    // Load MD files from the legal/ directory
+    await loadLegalDocuments();
 
-    if (tosAccepted) {
-        // Already accepted — go straight to main menu
-        fadeIn(mainMenu);
-        return;
+    // ALWAYS show main menu first for a cleaner experience
+    fadeIn(mainMenu);
+}
+
+async function loadLegalDocuments() {
+    if (!window.electronAPI?.readLegalFile || !window.marked) return;
+
+    const docs = [
+        { file: 'tos.md', container: 'tos-scroll' },
+        { file: 'modding.md', container: 'modding-scroll' },
+        { file: 'privacy.md', container: 'privacy-scroll' }
+    ];
+
+    for (const doc of docs) {
+        const markdown = await window.electronAPI.readLegalFile(doc.file);
+        const container = document.getElementById(doc.container);
+        if (container) {
+            container.innerHTML = marked.parse(markdown);
+            
+            // Add click listener for links to copy instead of follow
+            container.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const textToCopy = link.getAttribute('href')?.replace(/^mailto:/, '') || link.textContent;
+                    navigator.clipboard.writeText(textToCopy);
+                    showToastNotification('Address copied to clipboard');
+                });
+            });
+        }
     }
-
-    // Show ToS overlay for first-run
-    fadeIn(tosOverlay);
 }
 
 function setupTosTabs() {
@@ -82,6 +104,8 @@ function setupTosFooter() {
         const alreadyAccepted = localStorage.getItem(TOS_ACCEPTED_KEY) === '1';
         localStorage.setItem(TOS_ACCEPTED_KEY, '1');
         
+        Logger.info('Legal agreements accepted by user.');
+        
         fadeOut(tosOverlay, () => {
             if (!alreadyAccepted) {
                 fadeIn(mainMenu);
@@ -90,26 +114,69 @@ function setupTosFooter() {
     });
 
     document.getElementById('tos-return-btn').addEventListener('click', () => {
-        const alreadyAccepted = localStorage.getItem(TOS_ACCEPTED_KEY) === '1';
-        
-        if (alreadyAccepted) {
-            // Just re-reading, go back to menu
-            fadeOut(tosOverlay);
-        } else {
-            // First run and didn't agree? Quit the app.
-            if (window.electronAPI?.quit) {
-                window.electronAPI.quit();
-            } else {
-                window.close();
-            }
-        }
+        // Just return to the main menu
+        fadeOut(tosOverlay);
     });
 }
 
-// ─── Main Menu ────────────────────────────────────────────────────────────────
+async function checkForUpdates() {
+    const statusEl = document.getElementById('update-status');
+    if (!statusEl) return;
+
+    if (!navigator.onLine) {
+        statusEl.className = 'update-status status-error';
+        statusEl.innerHTML = '<span class="status-icon">⚠</span> No internet connection';
+        return;
+    }
+
+    try {
+        // Simple fetch with a short timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+        const response = await fetch(VERSION_URL, { signal: controller.signal });
+        clearTimeout(timeoutId);
+
+        if (!response.ok) throw new Error('Version fetch failed');
+        
+        const data = await response.json();
+        const remoteVersion = data.version;
+
+        if (remoteVersion === APP_VERSION) {
+            statusEl.className = 'update-status status-up-to-date';
+            statusEl.innerHTML = `<span class="status-icon">✓</span> Guild is up-to-date (${APP_VERSION})`;
+        } else {
+            statusEl.className = 'update-status status-update-available';
+            statusEl.innerHTML = `<span class="status-icon">✦</span> Update available: v${remoteVersion}`;
+        }
+    } catch (err) {
+        console.warn('Update check failed:', err);
+        statusEl.className = 'update-status status-error';
+        statusEl.innerHTML = '<span class="status-icon">✕</span> Connection failed';
+    }
+}
+
 function initMainMenu() {
+    // Check for updates on startup
+    checkForUpdates();
+
+    // Developer Debug Console (only if enabled in settings)
+    if (localStorage.getItem('tlg_debug_console') === '1') {
+        window.electronAPI?.openDebugConsole();
+    }
+
     // Play button
     document.getElementById('menu-play-btn').addEventListener('click', () => {
+        const tosAccepted = localStorage.getItem(TOS_ACCEPTED_KEY) === '1';
+
+        if (!tosAccepted) {
+            // Force ToS acceptance before playing
+            fadeIn(tosOverlay);
+            return;
+        }
+
+        Logger.system('Starting new game session.');
+
         fadeOut(mainMenu, () => {
             fadeIn(appDiv);
             // Trigger game init — dispatched so ui.js can listen
@@ -215,6 +282,13 @@ function initSettings() {
         const res  = resSelect.value;
         localStorage.setItem('tlg_window_mode', mode);
         localStorage.setItem('tlg_resolution',  res);
+        localStorage.setItem('tlg_debug_console', document.getElementById('setting-debug-console').checked ? '1' : '0');
+
+        // Sync with GameState
+        import('./state.js').then(({ GameState }) => {
+            GameState.state.debugConsole = document.getElementById('setting-debug-console').checked;
+            GameState.save();
+        });
 
         // Apply Window Settings via Electron
         if (window.electronAPI) {
@@ -225,12 +299,14 @@ function initSettings() {
             }
         }
 
+        Logger.info('New settings configuration applied.');
+
         // Notify user instead of closing
-        showSettingsNotification('Configuration Applied');
+        showToastNotification('Configuration Applied');
     });
 }
 
-function showSettingsNotification(message) {
+function showToastNotification(message) {
     const container = document.getElementById('notification-container');
     if (!container) return;
 
@@ -284,6 +360,7 @@ function loadSettings() {
 
     // Switches
     document.getElementById('setting-crash-log').checked = localStorage.getItem('tlg_crash_log') === '1';
+    document.getElementById('setting-debug-console').checked = localStorage.getItem('tlg_debug_console') === '1';
 
     // Window Mode & Res
     const savedMode = localStorage.getItem('tlg_window_mode') || 'fullscreen';

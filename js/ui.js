@@ -1,5 +1,6 @@
 import { GameState } from './state.js';
 import { GameEngine } from './engine.js';
+import { Logger } from './logger.js';
 
 class UIController {
     constructor() {
@@ -31,6 +32,7 @@ class UIController {
     }
 
     switchView(viewId) {
+        Logger.info(`Navigating to ${viewId}`);
         this.currentView = viewId;
         this.navButtons.forEach(btn => {
             btn.classList.toggle('active', btn.getAttribute('data-view') === viewId);
