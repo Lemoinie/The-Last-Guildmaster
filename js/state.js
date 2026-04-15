@@ -22,13 +22,15 @@ export const initialState = {
     unlockedBuildings: ['tavern', 'inn', 'storage'],
     logs: ['Welcome, Guildmaster. Your journey begins.'],
     lastSave: Date.now(),
-    debugConsole: false
+    debugConsole: false,
+    autoSaveInterval: 30 // Minutes
 };
 
 class StateManager {
     constructor() {
         this.state = initialState;
         this.listeners = [];
+        this.autoSaveTimer = null;
         this.init();
     }
 
@@ -40,13 +42,26 @@ class StateManager {
                 console.log('State loaded from file system');
             }
         } else {
-            // Fallback to localStorage if not in Electron context
             const saved = localStorage.getItem(STORAGE_KEY);
             if (saved) {
                 this.state = { ...initialState, ...JSON.parse(saved) };
             }
         }
+        this.startAutoSaveTimer();
         this.notify();
+    }
+
+    startAutoSaveTimer() {
+        if (this.autoSaveTimer) clearInterval(this.autoSaveTimer);
+        
+        const intervalMins = parseInt(this.state.autoSaveInterval) || 0;
+        if (intervalMins > 0) {
+            console.log(`Auto-save scheduled every ${intervalMins} minutes.`);
+            this.autoSaveTimer = setInterval(() => {
+                console.log('Performing scheduled auto-save...');
+                this.save();
+            }, intervalMins * 60 * 1000);
+        }
     }
 
     async save() {
@@ -56,9 +71,8 @@ class StateManager {
             await window.electronAPI.saveGame(this.state);
         }
         
-        // Keep localStorage as backup
         localStorage.setItem(STORAGE_KEY, JSON.stringify(this.state));
-        this.notify();
+        console.log('Game state secured.');
     }
 
     reset() {
@@ -68,7 +82,8 @@ class StateManager {
 
     async update(updater) {
         updater(this.state);
-        await this.save();
+        // We no longer save immediately to disk to prevent micro-lag
+        this.notify();
     }
 
     subscribe(listener) {

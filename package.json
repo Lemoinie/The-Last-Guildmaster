@@ -2,7 +2,11 @@
   "name": "the-last-guildmaster",
   "version": "0.1.0",
   "description": "A single-player RPG guild management game.",
+  "repository": "https://github.com/Lemoinie/The-Last-Guildmaster",
   "main": "main.js",
+  "author": {
+    "name": "Lemoinie"
+  },
   "scripts": {
     "start": "electron .",
     "build": "electron-builder build --win"
@@ -16,6 +20,15 @@
     "productName": "The Last Guildmaster",
     "win": {
       "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": false,
+      "runAfterFinish": false,
+      "allowToChangeInstallationDirectory": true,
+      "include": "build/installer.nsh"
     }
+  },
+  "dependencies": {
+    "electron-updater": "^6.8.3"
   }
 }

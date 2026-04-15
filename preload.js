@@ -8,5 +8,12 @@ contextBridge.exposeInMainWorld('electronAPI', {
   saveGame: (data) => ipcRenderer.invoke('app:save-game', data),
   loadGame: () => ipcRenderer.invoke('app:load-game'),
   writeLog: (type, message) => ipcRenderer.invoke('app:write-log', { type, message }),
-  openDebugConsole: () => ipcRenderer.invoke('app:open-debug-console')
+  openDebugConsole: () => ipcRenderer.invoke('app:open-debug-console'),
+  
+  // Auto-Updater
+  checkForUpdates: () => ipcRenderer.invoke('app:check-for-updates'),
+  downloadUpdate: () => ipcRenderer.invoke('app:download-update'),
+  installUpdate:  () => ipcRenderer.invoke('app:install-update'),
+  onUpdateStatus:   (callback) => ipcRenderer.on('update:status',   (event, status, version) => callback(status, version)),
+  onUpdateProgress: (callback) => ipcRenderer.on('update:progress', (event, percent) => callback(percent))
 });
