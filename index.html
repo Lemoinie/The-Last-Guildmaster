@@ -32,11 +32,6 @@
             <!-- ToS Content -->
             <div id="tos-panel" class="tos-panel active" role="tabpanel" aria-labelledby="tab-tos">
                 <div class="tos-scrollarea" id="tos-scroll">
-                    <div class="tos-summary-box">
-                        <span class="summary-icon">📋</span>
-                        <strong>Summary for Humans:</strong> By playing, you agree to these rules. The game is a moddable platform. You keep ownership of your mods but must not use them for harm. We are not liable for crashes from third-party mods.
-                    </div>
-
                     <h2>1. Acceptance of Terms</h2>
                     <p>By downloading, installing, or running <em>The Last Guildmaster</em> (the "Game"), you agree to be bound by these Terms of Service. If you do not agree, do not use the Game.</p>
 
@@ -64,11 +59,6 @@
             <!-- Modding Policy Content -->
             <div id="modding-panel" class="tos-panel" role="tabpanel" aria-labelledby="tab-modding">
                 <div class="tos-scrollarea">
-                    <div class="tos-summary-box">
-                        <span class="summary-icon">⚙️</span>
-                        <strong>Summary for Humans:</strong> This is version 0.1.0 — things will break and change. Play fair, don't cheat or monetize our engine, and give proper credit when you publish mods.
-                    </div>
-
                     <h2>1. Version Status & Breaking Changes</h2>
                     <p>The game is at <strong>version 0.1.0 (Early Alpha)</strong>. The core API, module schema, and engine interfaces are <strong>unstable</strong>. Breaking changes are expected in future updates without backward-compatibility guarantees until v1.0.0.</p>
 
@@ -93,11 +83,6 @@
             <!-- Privacy Policy Content -->
             <div id="privacy-panel" class="tos-panel" role="tabpanel" aria-labelledby="tab-privacy">
                 <div class="tos-scrollarea">
-                    <div class="tos-summary-box">
-                        <span class="summary-icon">🔒</span>
-                        <strong>Summary for Humans:</strong> We collect very little — basic hardware info, crash logs, and local save data. We don't sell your data. You can request deletion. If you're under 13 (or 16 in the EU), please don't play.
-                    </div>
-
                     <h2>1. Data We Collect</h2>
                     <ul>
                         <li><strong>Basic Hardware Specs:</strong> GPU model, RAM, OS version — for performance optimization only, stored locally.</li>
@@ -130,9 +115,12 @@
                 <label class="tos-checkbox-label" for="tos-agree-check">
                     <input type="checkbox" id="tos-agree-check" aria-required="true">
                     <span class="custom-checkbox"></span>
-                    I have read and agree to the <strong>Terms of Service</strong>, <strong>Modding Policy</strong>, and <strong>Privacy Policy</strong>.
+                    I agree.
                 </label>
-                <button id="tos-accept-btn" class="btn-primary" disabled>Enter the Guild</button>
+                <div class="tos-actions">
+                    <button id="tos-return-btn" class="btn-ghost">Return</button>
+                    <button id="tos-accept-btn" class="btn-primary" disabled>Enter the Guild</button>
+                </div>
             </div>
         </div>
     </div>
@@ -152,7 +140,7 @@
 
             <!-- Menu Buttons -->
             <nav class="menu-nav" aria-label="Main Menu Navigation">
-                <button id="menu-play-btn" class="menu-btn menu-btn-primary" data-action="play">
+                <button id="menu-play-btn" class="menu-btn" data-action="play">
                     <span class="menu-btn-icon">⚔</span>
                     <span class="menu-btn-label">Play</span>
                     <span class="menu-btn-arrow">→</span>
@@ -179,53 +167,130 @@
                 <span class="menu-version">v0.1.0 Early Alpha</span>
                 <span class="menu-sep">·</span>
                 <span class="menu-license">Apache License 2.0</span>
-                <button class="menu-legal-link" id="menu-legal-btn">Legal</button>
             </div>
+        </div>
+
+        <!-- Corner Legal Link -->
+        <div class="menu-corner-legal">
+            <button class="menu-legal-link" id="menu-legal-btn" title="Re-read Legal Agreements">⚖</button>
         </div>
     </div>
 
     <!-- ========== SETTINGS MODAL ========== -->
     <div id="settings-modal" class="overlay hidden" aria-modal="true" role="dialog" aria-labelledby="settings-title">
         <div class="modal-backdrop" data-close="settings-modal"></div>
-        <div class="sub-modal glass-panel">
+        <div class="sub-modal settings-modal-obsidian glass-panel">
             <div class="sub-modal-header">
-                <h2 id="settings-title">⚙ Settings</h2>
+                <div class="header-title-group">
+                    <span class="header-icon">⚙</span>
+                    <h2 id="settings-title">Guild Configuration</h2>
+                </div>
                 <button class="modal-close-btn" data-close="settings-modal" aria-label="Close">✕</button>
             </div>
-            <div class="sub-modal-body">
-                <div class="setting-row">
-                    <label for="setting-volume">Master Volume</label>
-                    <input type="range" id="setting-volume" min="0" max="100" value="80" class="styled-range">
-                    <span id="volume-display" class="setting-value">80%</span>
-                </div>
-                <div class="setting-row">
-                    <label for="setting-music">Music Volume</label>
-                    <input type="range" id="setting-music" min="0" max="100" value="60" class="styled-range">
-                    <span id="music-display" class="setting-value">60%</span>
-                </div>
-                <div class="setting-row">
-                    <label for="setting-fx">SFX Volume</label>
-                    <input type="range" id="setting-fx" min="0" max="100" value="70" class="styled-range">
-                    <span id="fx-display" class="setting-value">70%</span>
-                </div>
-                <div class="setting-row">
-                    <label for="setting-crash-log">Allow Crash Log Reporting</label>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="setting-crash-log">
-                        <span class="toggle-slider"></span>
-                    </label>
-                </div>
-                <div class="setting-row">
-                    <label for="setting-particles">Enable Particles</label>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="setting-particles" checked>
-                        <span class="toggle-slider"></span>
-                    </label>
+            
+            <div class="sub-modal-body settings-layout">
+                <nav class="settings-tabs" role="tablist">
+                    <button class="settings-tab active" data-settings-tab="audio" role="tab" aria-selected="true">
+                        <span class="tab-icon">🔊</span>
+                        <span class="tab-text">Audio</span>
+                    </button>
+                    <button class="settings-tab" data-settings-tab="video" role="tab" aria-selected="false">
+                        <span class="tab-icon">👁</span>
+                        <span class="tab-text">Video</span>
+                    </button>
+                    <button class="settings-tab" data-settings-tab="gameplay" role="tab" aria-selected="false">
+                        <span class="tab-icon">⚔</span>
+                        <span class="tab-text">Gameplay</span>
+                    </button>
+                </nav>
+
+                <div class="settings-content">
+                    <!-- Audio Category -->
+                    <div id="settings-audio-panel" class="settings-panel active" role="tabpanel">
+                        <div class="settings-group-header">Acoustics</div>
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <label for="setting-volume">Master Volume</label>
+                                <p class="setting-desc">Overall sound level of the realm.</p>
+                            </div>
+                            <div class="setting-control">
+                                <input type="range" id="setting-volume" min="0" max="100" value="80" class="styled-range">
+                                <span id="volume-display" class="setting-value">80%</span>
+                            </div>
+                        </div>
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <label for="setting-music">Atmospheric Music</label>
+                                <p class="setting-desc">Volume of the background orchestrations.</p>
+                            </div>
+                            <div class="setting-control">
+                                <input type="range" id="setting-music" min="0" max="100" value="60" class="styled-range">
+                                <span id="music-display" class="setting-value">60%</span>
+                            </div>
+                        </div>
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <label for="setting-fx">Sound Effects</label>
+                                <p class="setting-desc">Volume of combat and interface sounds.</p>
+                            </div>
+                            <div class="setting-control">
+                                <input type="range" id="setting-fx" min="0" max="100" value="70" class="styled-range">
+                                <span id="fx-display" class="setting-value">70%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Video Category -->
+                    <div id="settings-video-panel" class="settings-panel" role="tabpanel">
+                        <div class="settings-group-header">Visuals & Display</div>
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <label for="setting-window-mode">Display Mode</label>
+                                <p class="setting-desc">How the portal to this world is rendered.</p>
+                            </div>
+                            <select id="setting-window-mode" class="styled-select">
+                                <option value="fullscreen">Fullscreen</option>
+                                <option value="windowed">Windowed</option>
+                            </select>
+                        </div>
+                        <div class="setting-row" id="resolution-row">
+                            <div class="setting-info">
+                                <label for="setting-resolution">Resolution</label>
+                                <p class="setting-desc">Clarity of the visuals (Windowed only).</p>
+                            </div>
+                            <select id="setting-resolution" class="styled-select">
+                                <option value="1280x720">1280 x 720</option>
+                                <option value="1280x800">1280 x 800</option>
+                                <option value="1366x768">1366 x 768</option>
+                                <option value="1440x900">1440 x 900</option>
+                                <option value="1600x900">1600 x 900</option>
+                                <option value="1920x1080" selected>1920 x 1080</option>
+                                <option value="1920x1200">1920 x 1200</option>
+                                <option value="2560x1440">2560 x 1440</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Gameplay Category -->
+                    <div id="settings-gameplay-panel" class="settings-panel" role="tabpanel">
+                        <div class="settings-group-header">Chronicles & Safety</div>
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <label for="setting-crash-log">Report Transmissions</label>
+                                <p class="setting-desc">Send scroll logs if the game collapses.</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="setting-crash-log">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="sub-modal-footer">
-                <button class="btn-secondary" data-close="settings-modal">Cancel</button>
-                <button class="btn-primary" id="settings-save-btn">Save Settings</button>
+            
+            <div class="sub-modal-footer settings-footer-ornamental">
+                <button class="btn-ghost" data-close="settings-modal">Discard Changes</button>
+                <button class="btn-primary" id="settings-save-btn">Apply Configuration</button>
             </div>
         </div>
     </div>

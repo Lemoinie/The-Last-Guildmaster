@@ -34,19 +34,20 @@ function fadeOut(el, callback) {
 
 // ─── ToS Flow ────────────────────────────────────────────────────────────────
 function initTos() {
+    // Always initialize listeners so tabs/footer work during re-reads
+    setupTosTabs();
+    setupTosFooter();
+
     const tosAccepted = localStorage.getItem(TOS_ACCEPTED_KEY);
 
     if (tosAccepted) {
         // Already accepted — go straight to main menu
         fadeIn(mainMenu);
-        startParticles();
         return;
     }
 
-    // Show ToS overlay
+    // Show ToS overlay for first-run
     fadeIn(tosOverlay);
-    setupTosTabs();
-    setupTosFooter();
 }
 
 function setupTosTabs() {
@@ -77,11 +78,31 @@ function setupTosFooter() {
 
     acceptBtn.addEventListener('click', () => {
         if (!checkbox.checked) return;
+        
+        const alreadyAccepted = localStorage.getItem(TOS_ACCEPTED_KEY) === '1';
         localStorage.setItem(TOS_ACCEPTED_KEY, '1');
+        
         fadeOut(tosOverlay, () => {
-            fadeIn(mainMenu);
-            startParticles();
+            if (!alreadyAccepted) {
+                fadeIn(mainMenu);
+            }
         });
+    });
+
+    document.getElementById('tos-return-btn').addEventListener('click', () => {
+        const alreadyAccepted = localStorage.getItem(TOS_ACCEPTED_KEY) === '1';
+        
+        if (alreadyAccepted) {
+            // Just re-reading, go back to menu
+            fadeOut(tosOverlay);
+        } else {
+            // First run and didn't agree? Quit the app.
+            if (window.electronAPI?.quit) {
+                window.electronAPI.quit();
+            } else {
+                window.close();
+            }
+        }
     });
 }
 
@@ -124,7 +145,6 @@ function initMainMenu() {
     document.getElementById('back-to-menu-btn').addEventListener('click', () => {
         fadeOut(appDiv, () => {
             fadeIn(mainMenu);
-            startParticles();
         });
     });
 }
@@ -150,6 +170,10 @@ function initModalCloseHandlers() {
 
 // ─── Settings ────────────────────────────────────────────────────────────────
 function initSettings() {
+    setupSettingsTabs();
+    loadSettings();
+
+    // Volume Sliders
     const ranges = [
         { range: 'setting-volume',  display: 'volume-display' },
         { range: 'setting-music',   display: 'music-display' },
@@ -164,79 +188,123 @@ function initSettings() {
         });
     });
 
+    // Window Mode & Resolution Logic
+    const modeSelect = document.getElementById('setting-window-mode');
+    const resSelect  = document.getElementById('setting-resolution');
+
+    const updateResState = () => {
+        if (modeSelect.value === 'fullscreen') {
+            resSelect.disabled = true;
+        } else {
+            resSelect.disabled = false;
+        }
+    };
+
+    modeSelect?.addEventListener('change', updateResState);
+    updateResState();
+
+    // Save Logic
     document.getElementById('settings-save-btn').addEventListener('click', () => {
         // Save to localStorage for persistence
         localStorage.setItem('tlg_volume_master', document.getElementById('setting-volume').value);
         localStorage.setItem('tlg_volume_music',  document.getElementById('setting-music').value);
         localStorage.setItem('tlg_volume_fx',     document.getElementById('setting-fx').value);
         localStorage.setItem('tlg_crash_log',     document.getElementById('setting-crash-log').checked ? '1' : '0');
-        fadeOut(settingsModal);
+        
+        const mode = modeSelect.value;
+        const res  = resSelect.value;
+        localStorage.setItem('tlg_window_mode', mode);
+        localStorage.setItem('tlg_resolution',  res);
+
+        // Apply Window Settings via Electron
+        if (window.electronAPI) {
+            window.electronAPI.setWindowMode(mode);
+            if (mode === 'windowed') {
+                const [w, h] = res.split('x').map(Number);
+                window.electronAPI.setResolution(w, h);
+            }
+        }
+
+        // Notify user instead of closing
+        showSettingsNotification('Configuration Applied');
     });
 }
 
-// ─── Particle System (Canvas) ────────────────────────────────────────────────
-let particleAnimFrame = null;
+function showSettingsNotification(message) {
+    const container = document.getElementById('notification-container');
+    if (!container) return;
 
-function startParticles() {
-    const canvas = document.getElementById('particles-canvas');
-    if (!canvas) return;
-
-    // Respect the "disable particles" setting
-    const particlesSetting = document.getElementById('setting-particles');
-    if (particlesSetting && !particlesSetting.checked) return;
-
-    const ctx = canvas.getContext('2d');
-    const PARTICLE_COUNT = 60;
-    let particles = [];
-
-    function resize() {
-        canvas.width  = window.innerWidth;
-        canvas.height = window.innerHeight;
-    }
-
-    class Particle {
-        constructor() { this.reset(); }
-        reset() {
-            this.x     = Math.random() * canvas.width;
-            this.y     = Math.random() * canvas.height;
-            this.vx    = (Math.random() - 0.5) * 0.4;
-            this.vy    = -Math.random() * 0.6 - 0.2;
-            this.alpha = Math.random() * 0.5 + 0.1;
-            this.size  = Math.random() * 2 + 0.5;
-            this.color = Math.random() > 0.7 ? '#FF3131' : '#00FF41';
-        }
-        update() {
-            this.x += this.vx;
-            this.y += this.vy;
-            this.alpha -= 0.001;
-            if (this.alpha <= 0 || this.y < -10) this.reset();
-        }
-        draw() {
-            ctx.save();
-            ctx.globalAlpha = this.alpha;
-            ctx.fillStyle   = this.color;
-            ctx.shadowBlur  = 8;
-            ctx.shadowColor = this.color;
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.restore();
-        }
-    }
-
-    resize();
-    window.addEventListener('resize', resize);
-    particles = Array.from({ length: PARTICLE_COUNT }, () => new Particle());
-
-    function loop() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        particles.forEach(p => { p.update(); p.draw(); });
-        particleAnimFrame = requestAnimationFrame(loop);
-    }
-
-    if (particleAnimFrame) cancelAnimationFrame(particleAnimFrame);
-    loop();
+    const toast = document.createElement('div');
+    toast.className = 'toast glass-panel success';
+    toast.style.position = 'fixed';
+    toast.style.bottom = '20px';
+    toast.style.right = '20px';
+    toast.style.zIndex = '2000';
+    toast.textContent = message;
+    
+    container.appendChild(toast);
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(20px)';
+        toast.style.transition = 'all 0.5s ease';
+        setTimeout(() => toast.remove(), 500);
+    }, 2000);
 }
+
+function setupSettingsTabs() {
+    const tabs   = settingsModal.querySelectorAll('.settings-tab');
+    const panels = settingsModal.querySelectorAll('.settings-panel');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            tabs.forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); });
+            panels.forEach(p => p.classList.remove('active'));
+
+            tab.classList.add('active');
+            tab.setAttribute('aria-selected', 'true');
+
+            const targetId = 'settings-' + tab.getAttribute('data-settings-tab') + '-panel';
+            document.getElementById(targetId)?.classList.add('active');
+        });
+    });
+}
+
+function loadSettings() {
+    // Volume
+    document.getElementById('setting-volume').value = localStorage.getItem('tlg_volume_master') || 80;
+    document.getElementById('setting-music').value  = localStorage.getItem('tlg_volume_music')  || 60;
+    document.getElementById('setting-fx').value     = localStorage.getItem('tlg_volume_fx')     || 70;
+    
+    // Updates the displayed percentages
+    ['volume', 'music', 'fx'].forEach(key => {
+        const val = document.getElementById(`setting-${key}`).value;
+        const display = document.getElementById(`${key}-display`);
+        if (display) display.textContent = val + '%';
+    });
+
+    // Switches
+    document.getElementById('setting-crash-log').checked = localStorage.getItem('tlg_crash_log') === '1';
+
+    // Window Mode & Res
+    const savedMode = localStorage.getItem('tlg_window_mode') || 'fullscreen';
+    const savedRes  = localStorage.getItem('tlg_resolution')  || '1920x1080';
+    
+    const modeSelect = document.getElementById('setting-window-mode');
+    const resSelect  = document.getElementById('setting-resolution');
+
+    if (modeSelect) modeSelect.value = savedMode;
+    if (resSelect) resSelect.value = savedRes;
+
+    // Apply initially if on Electon
+    if (window.electronAPI) {
+        window.electronAPI.setWindowMode(savedMode);
+        if (savedMode === 'windowed') {
+            const [w, h] = savedRes.split('x').map(Number);
+            window.electronAPI.setResolution(w, h);
+        }
+    }
+}
+
 
 // ─── Boot ─────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {

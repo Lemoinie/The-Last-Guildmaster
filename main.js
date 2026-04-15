@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, ipcMain, screen } = require('electron');
 const path = require('path');
 
 function createWindow() {
@@ -12,15 +12,38 @@ function createWindow() {
       nodeIntegration: false,
       contextIsolation: true,
       sandbox: true,
+      preload: path.join(__dirname, 'preload.js')
     },
     show: false,
-    autoHideMenuBar: true, // Clean glassmorphic look
+    autoHideMenuBar: true,
+    fullscreen: true // Open in full screen by default
   });
 
   win.loadFile('index.html');
 
   win.once('ready-to-show', () => {
     win.show();
+  });
+
+  // --- IPC Handlers ---
+  ipcMain.on('app:quit', () => {
+    app.quit();
+  });
+
+  ipcMain.on('window:set-mode', (event, mode) => {
+    if (mode === 'fullscreen') {
+      win.setFullScreen(true);
+    } else {
+      win.setFullScreen(false);
+      win.unmaximize();
+    }
+  });
+
+  ipcMain.on('window:set-resolution', (event, { width, height }) => {
+    if (!win.isFullScreen()) {
+      win.setSize(width, height);
+      win.center();
+    }
   });
 }
 

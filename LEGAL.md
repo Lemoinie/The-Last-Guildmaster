@@ -153,7 +153,7 @@ You may request a summary of any data associated with your use of the Game.
 ### Right to Deletion ("Right to be Forgotten")
 You have the right to request deletion of any data we hold about you. To exercise this right:
 1. Delete your local save data from `%APPDATA%\the-last-guildmaster\`.
-2. Contact us at **[your-contact@email.com]** with Subject: "Data Deletion Request".
+2. Contact us at **[lemoinieofficial@email.com]** with Subject: "Data Deletion Request".
 3. We will process your request within **30 days** and confirm deletion.
 
 ### Right to Portability
@@ -168,7 +168,7 @@ You may opt out of crash log reporting in the Game's Settings menu at any time. 
 >
 > *The Last Guildmaster* is **not intended for users under the age of 13** (or **under the age of 16** in the European Union and countries following EU GDPR standards).
 >
-> By using this Game, you confirm that you meet the minimum age requirement for your jurisdiction. If you are a parent or guardian and believe your child has used this Game in violation of this clause, please contact us immediately at **[your-contact@email.com]** for data deletion.
+> By using this Game, you confirm that you meet the minimum age requirement for your jurisdiction. If you are a parent or guardian and believe your child has used this Game in violation of this clause, please contact us immediately at **[lemoinieofficial@email.com]** for data deletion.
 
 We do not knowingly collect any data from minors. If we become aware that a minor has provided us with data, we will delete it promptly.
 
@@ -184,8 +184,8 @@ We may update this Privacy Policy as the Game develops. When changes are made, w
 
 For privacy-related inquiries, data deletion requests, or questions about these policies:
 
-📧 **[your-contact@email.com]**
-🌐 **[your-project-homepage-url]**
+📧 **[lemoinieofficial@email.com]**
+🌐 **[https://lemon-portfolio-topaz.vercel.app/projects/the-last-guildmaster]**
 
 ---
 
