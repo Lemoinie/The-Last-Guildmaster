@@ -4,26 +4,289 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Last Guildmaster</title>
+    <meta name="description" content="The Last Guildmaster — a premium dark-fantasy guild management RPG. Recruit adventurers, manage resources, and lead your guild to glory.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="dark-theme">
-    <div id="app">
+
+    <!-- ========== TERMS OF SERVICE OVERLAY ========== -->
+    <div id="tos-overlay" class="overlay hidden" aria-modal="true" role="dialog" aria-labelledby="tos-title">
+        <div class="modal-backdrop"></div>
+        <div class="tos-modal glass-panel">
+            <div class="tos-header">
+                <div class="tos-icon">⚖</div>
+                <h1 id="tos-title" class="tos-title">Legal Agreements</h1>
+                <p class="tos-subtitle">Please review and accept our terms before entering the guild.</p>
+            </div>
+
+            <!-- Tab Navigation -->
+            <div class="tos-tabs" role="tablist">
+                <button class="tos-tab active" data-tab="tos" role="tab" aria-selected="true" id="tab-tos">Terms of Service</button>
+                <button class="tos-tab" data-tab="modding" role="tab" aria-selected="false" id="tab-modding">Modding Policy</button>
+                <button class="tos-tab" data-tab="privacy" role="tab" aria-selected="false" id="tab-privacy">Privacy Policy</button>
+            </div>
+
+            <!-- ToS Content -->
+            <div id="tos-panel" class="tos-panel active" role="tabpanel" aria-labelledby="tab-tos">
+                <div class="tos-scrollarea" id="tos-scroll">
+                    <div class="tos-summary-box">
+                        <span class="summary-icon">📋</span>
+                        <strong>Summary for Humans:</strong> By playing, you agree to these rules. The game is a moddable platform. You keep ownership of your mods but must not use them for harm. We are not liable for crashes from third-party mods.
+                    </div>
+
+                    <h2>1. Acceptance of Terms</h2>
+                    <p>By downloading, installing, or running <em>The Last Guildmaster</em> (the "Game"), you agree to be bound by these Terms of Service. If you do not agree, do not use the Game.</p>
+
+                    <h2>2. The Game as a Platform & Engine</h2>
+                    <p><em>The Last Guildmaster</em> is designed as a <strong>moddable platform and engine</strong>. Its core functionality serves as a runtime environment for official content and user-created modules ("mods"). The core engine is open-source under the <strong>Apache License 2.0</strong>.</p>
+
+                    <h2>3. User Generated Content (UGC)</h2>
+                    <ul>
+                        <li><strong>Ownership:</strong> You retain full intellectual property rights over any mod logic, scripts, assets, or content you create.</li>
+                        <li><strong>License Grant:</strong> By distributing or running your mods within the Game, you grant the Game a <strong>perpetual, worldwide, royalty-free, non-exclusive license</strong> to execute, display, and distribute your mods as part of the runtime.</li>
+                        <li><strong>No Endorsement:</strong> Publishing a mod does not imply endorsement by the developers.</li>
+                    </ul>
+
+                    <h2>4. Safety Clause</h2>
+                    <p>You agree that your mods <strong>must not</strong> contain malicious code, viruses, spyware, or illegal content; violate any applicable law; include content harmful to minors; or attempt to tamper with the Game's core security or save systems.</p>
+
+                    <h2>5. Disclaimer of Liability for Third-Party Modules</h2>
+                    <p>The developers are <strong>not responsible</strong> for crashes, data corruption, or performance issues caused by third-party mods. You install and run third-party mods entirely at your own risk.</p>
+
+                    <h2>6. Disclaimer of Warranties</h2>
+                    <p>The Game is provided <strong>"AS IS"</strong> under the Apache License 2.0, without warranties of any kind, express or implied.</p>
+                </div>
+            </div>
+
+            <!-- Modding Policy Content -->
+            <div id="modding-panel" class="tos-panel" role="tabpanel" aria-labelledby="tab-modding">
+                <div class="tos-scrollarea">
+                    <div class="tos-summary-box">
+                        <span class="summary-icon">⚙️</span>
+                        <strong>Summary for Humans:</strong> This is version 0.1.0 — things will break and change. Play fair, don't cheat or monetize our engine, and give proper credit when you publish mods.
+                    </div>
+
+                    <h2>1. Version Status & Breaking Changes</h2>
+                    <p>The game is at <strong>version 0.1.0 (Early Alpha)</strong>. The core API, module schema, and engine interfaces are <strong>unstable</strong>. Breaking changes are expected in future updates without backward-compatibility guarantees until v1.0.0.</p>
+
+                    <h2>2. Fair Play Policy</h2>
+                    <ul>
+                        <li><strong>No Cheating:</strong> Modifying game state to gain unfair advantages in competitive modules is prohibited.</li>
+                        <li><strong>No Exploits:</strong> Deliberately exploiting bugs to bypass intended gameplay systems is not permitted.</li>
+                        <li><strong>No Unauthorized Monetization:</strong> You may not sell or commercially distribute the <em>core engine</em> itself.</li>
+                        <li><strong>No Impersonation:</strong> Do not present your mod as an official release.</li>
+                    </ul>
+
+                    <h2>3. Attribution Rule (Apache 2.0)</h2>
+                    <p>Any mod, fork, or derivative work based on this engine must include a clear attribution notice:</p>
+                    <blockquote>"This mod is built using The Last Guildmaster Engine, licensed under the Apache License 2.0."</blockquote>
+                    <p>You must preserve all copyright and attribution notices in source files. Modified files must be clearly marked as changed.</p>
+
+                    <h2>4. Mod Distribution Guidelines</h2>
+                    <p>Publicly distributed mods should include a <code>README.md</code> describing their purpose, dependencies, and version compatibility. Mods must not bundle or redistribute the core engine source without proper attribution.</p>
+                </div>
+            </div>
+
+            <!-- Privacy Policy Content -->
+            <div id="privacy-panel" class="tos-panel" role="tabpanel" aria-labelledby="tab-privacy">
+                <div class="tos-scrollarea">
+                    <div class="tos-summary-box">
+                        <span class="summary-icon">🔒</span>
+                        <strong>Summary for Humans:</strong> We collect very little — basic hardware info, crash logs, and local save data. We don't sell your data. You can request deletion. If you're under 13 (or 16 in the EU), please don't play.
+                    </div>
+
+                    <h2>1. Data We Collect</h2>
+                    <ul>
+                        <li><strong>Basic Hardware Specs:</strong> GPU model, RAM, OS version — for performance optimization only, stored locally.</li>
+                        <li><strong>Crash Logs:</strong> Stored locally; transmitted only with your explicit opt-in consent.</li>
+                        <li><strong>Local Save Data:</strong> Stored only on your device in <code>%APPDATA%\the-last-guildmaster</code>. Never transmitted.</li>
+                    </ul>
+                    <p>We do <strong>not</strong> collect names, email addresses, payment info, or any cross-app data.</p>
+
+                    <h2>2. Your Rights</h2>
+                    <ul>
+                        <li><strong>Right to Access:</strong> Request a summary of data associated with your use.</li>
+                        <li><strong>Right to Deletion ("Right to Be Forgotten"):</strong> Delete local save data from <code>%APPDATA%\the-last-guildmaster\</code>, or contact us and we'll process your request within 30 days.</li>
+                        <li><strong>Right to Opt-Out:</strong> Disable crash log reporting anytime in the Settings menu.</li>
+                    </ul>
+
+                    <h2>3. Minor Protection Clause</h2>
+                    <div class="tos-warning-box">
+                        ⚠️ <strong>Age Restriction:</strong> This game is <strong>not intended for users under 13</strong> (or <strong>under 16 in the EU</strong>). By continuing, you confirm you meet the minimum age requirement for your jurisdiction.
+                    </div>
+
+                    <h2>4. Changes to This Policy</h2>
+                    <p>We may update this Privacy Policy as the Game develops. Continued use constitutes acceptance. Contact us at <strong>[your-contact@email.com]</strong> for privacy inquiries or data deletion requests.</p>
+
+                    <p class="tos-version-note"><em>Effective Date: April 15, 2026 · Version 0.1.0 · Apache License 2.0</em></p>
+                </div>
+            </div>
+
+            <!-- Agreement Footer -->
+            <div class="tos-footer">
+                <label class="tos-checkbox-label" for="tos-agree-check">
+                    <input type="checkbox" id="tos-agree-check" aria-required="true">
+                    <span class="custom-checkbox"></span>
+                    I have read and agree to the <strong>Terms of Service</strong>, <strong>Modding Policy</strong>, and <strong>Privacy Policy</strong>.
+                </label>
+                <button id="tos-accept-btn" class="btn-primary" disabled>Enter the Guild</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== MAIN MENU ========== -->
+    <div id="main-menu" class="overlay hidden" aria-label="Main Menu">
+        <div class="menu-bg-particles" id="particles-canvas"></div>
+        <div class="menu-overlay-gradient"></div>
+
+        <div class="menu-content">
+            <!-- Title Section -->
+            <div class="menu-title-block">
+                <div class="menu-title-ornament">⚔</div>
+                <h1 class="menu-game-title">The Last<br><span class="title-accent">Guildmaster</span></h1>
+                <p class="menu-tagline">Lead. Recruit. Survive.</p>
+            </div>
+
+            <!-- Menu Buttons -->
+            <nav class="menu-nav" aria-label="Main Menu Navigation">
+                <button id="menu-play-btn" class="menu-btn menu-btn-primary" data-action="play">
+                    <span class="menu-btn-icon">⚔</span>
+                    <span class="menu-btn-label">Play</span>
+                    <span class="menu-btn-arrow">→</span>
+                </button>
+                <button id="menu-settings-btn" class="menu-btn" data-action="settings">
+                    <span class="menu-btn-icon">⚙</span>
+                    <span class="menu-btn-label">Settings</span>
+                    <span class="menu-btn-arrow">→</span>
+                </button>
+                <button id="menu-credits-btn" class="menu-btn" data-action="credits">
+                    <span class="menu-btn-icon">📜</span>
+                    <span class="menu-btn-label">Credits</span>
+                    <span class="menu-btn-arrow">→</span>
+                </button>
+                <button id="menu-exit-btn" class="menu-btn menu-btn-danger" data-action="exit">
+                    <span class="menu-btn-icon">✕</span>
+                    <span class="menu-btn-label">Exit</span>
+                    <span class="menu-btn-arrow">→</span>
+                </button>
+            </nav>
+
+            <!-- Version / Legal Footer -->
+            <div class="menu-footer">
+                <span class="menu-version">v0.1.0 Early Alpha</span>
+                <span class="menu-sep">·</span>
+                <span class="menu-license">Apache License 2.0</span>
+                <button class="menu-legal-link" id="menu-legal-btn">Legal</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== SETTINGS MODAL ========== -->
+    <div id="settings-modal" class="overlay hidden" aria-modal="true" role="dialog" aria-labelledby="settings-title">
+        <div class="modal-backdrop" data-close="settings-modal"></div>
+        <div class="sub-modal glass-panel">
+            <div class="sub-modal-header">
+                <h2 id="settings-title">⚙ Settings</h2>
+                <button class="modal-close-btn" data-close="settings-modal" aria-label="Close">✕</button>
+            </div>
+            <div class="sub-modal-body">
+                <div class="setting-row">
+                    <label for="setting-volume">Master Volume</label>
+                    <input type="range" id="setting-volume" min="0" max="100" value="80" class="styled-range">
+                    <span id="volume-display" class="setting-value">80%</span>
+                </div>
+                <div class="setting-row">
+                    <label for="setting-music">Music Volume</label>
+                    <input type="range" id="setting-music" min="0" max="100" value="60" class="styled-range">
+                    <span id="music-display" class="setting-value">60%</span>
+                </div>
+                <div class="setting-row">
+                    <label for="setting-fx">SFX Volume</label>
+                    <input type="range" id="setting-fx" min="0" max="100" value="70" class="styled-range">
+                    <span id="fx-display" class="setting-value">70%</span>
+                </div>
+                <div class="setting-row">
+                    <label for="setting-crash-log">Allow Crash Log Reporting</label>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="setting-crash-log">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="setting-row">
+                    <label for="setting-particles">Enable Particles</label>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="setting-particles" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="sub-modal-footer">
+                <button class="btn-secondary" data-close="settings-modal">Cancel</button>
+                <button class="btn-primary" id="settings-save-btn">Save Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== CREDITS MODAL ========== -->
+    <div id="credits-modal" class="overlay hidden" aria-modal="true" role="dialog" aria-labelledby="credits-title">
+        <div class="modal-backdrop" data-close="credits-modal"></div>
+        <div class="sub-modal glass-panel">
+            <div class="sub-modal-header">
+                <h2 id="credits-title">📜 Credits</h2>
+                <button class="modal-close-btn" data-close="credits-modal" aria-label="Close">✕</button>
+            </div>
+            <div class="sub-modal-body credits-body">
+                <div class="credit-section">
+                    <h3 class="credit-role">Game Design & Development</h3>
+                    <p class="credit-name accent-text">Lemoinie</p>
+                </div>
+                <div class="credit-divider"></div>
+                <div class="credit-section">
+                    <h3 class="credit-role">Engine Framework</h3>
+                    <p class="credit-name">Electron · HTML5 · CSS3 · JavaScript</p>
+                </div>
+                <div class="credit-divider"></div>
+                <div class="credit-section">
+                    <h3 class="credit-role">Typography</h3>
+                    <p class="credit-name">Cinzel & Inter · Google Fonts</p>
+                </div>
+                <div class="credit-divider"></div>
+                <div class="credit-section">
+                    <h3 class="credit-role">Open Source License</h3>
+                    <p class="credit-name">Apache License 2.0</p>
+                </div>
+                <div class="credits-thank-you">
+                    <p>✦ Thank you for playing ✦</p>
+                    <p class="credits-tagline">"Every guild begins with a single Guildmaster."</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== GAME APP ========== -->
+    <div id="app" class="hidden">
         <!-- Sidebar Navigation -->
         <aside id="sidebar" class="glass-panel">
             <div class="logo">
                 <h1>Guildmaster</h1>
             </div>
             <nav>
-                <button class="nav-btn active" data-view="tavern">Tavern</button>
-                <button class="nav-btn" data-view="inn">Inn</button>
-                <button class="nav-btn" data-view="storage">Storage</button>
-                <button class="nav-btn" data-view="expedition">Expeditions</button>
-                <button class="nav-btn" data-view="market">Market</button>
-                <button class="nav-btn" data-view="blacksmith">Blacksmith</button>
-                <button class="nav-btn" data-view="garden">Garden</button>
-                <button class="nav-btn" data-view="alchemist">Alchemist</button>
-                <button class="nav-btn" data-view="church">Church</button>
+                <button class="nav-btn active" data-view="tavern">⚔ Tavern</button>
+                <button class="nav-btn" data-view="inn">🛏 Inn</button>
+                <button class="nav-btn" data-view="storage">📦 Storage</button>
+                <button class="nav-btn" data-view="expedition">🗺 Expeditions</button>
+                <button class="nav-btn" data-view="market">🏪 Market</button>
+                <button class="nav-btn" data-view="blacksmith">🔨 Blacksmith</button>
+                <button class="nav-btn" data-view="garden">🌿 Garden</button>
+                <button class="nav-btn" data-view="alchemist">⚗ Alchemist</button>
+                <button class="nav-btn" data-view="church">🕯 Church</button>
             </nav>
+            <div class="sidebar-footer">
+                <button class="sidebar-menu-btn" id="back-to-menu-btn" title="Return to Main Menu">☰ Menu</button>
+            </div>
         </aside>
 
         <!-- Main Content Area -->
@@ -56,6 +319,7 @@
     </div>
 
     <!-- Scripts -->
+    <script src="js/menu.js" type="module"></script>
     <script src="js/state.js" type="module"></script>
     <script src="js/engine.js" type="module"></script>
     <script src="js/ui.js" type="module"></script>

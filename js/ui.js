@@ -259,4 +259,10 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-new UIController();
+// Only initialize the game when the player clicks "Play" from the main menu.
+let uiControllerInstance = null;
+document.addEventListener('game:start', () => {
+    if (!uiControllerInstance) {
+        uiControllerInstance = new UIController();
+    }
+});

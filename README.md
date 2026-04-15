@@ -83,4 +83,6 @@ The game utilizes a **Dark Glassmorphism** design system with:
 ---
 
 ## ⚖ License
-This project is licensed under the MIT License. See the `LICENSE` file for details.
+This project is licensed under the **Apache License 2.0**. See the [`LICENSE`](./LICENSE) file for full details.
+
+[![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
