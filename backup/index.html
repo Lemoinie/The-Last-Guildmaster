@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Last Guildmaster</title>
+    <meta name="description" content="The Last Guildmaster — a premium dark-fantasy guild management RPG. Recruit adventurers, manage resources, and lead your guild to glory.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/overlays.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/main_menu.css">
+    <link rel="stylesheet" href="css/modals.css">
+    <!-- Markdown Parser -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body class="dark-theme">
+
+    <!-- ========== TERMS OF SERVICE OVERLAY ========== -->
+    <div id="tos-overlay" class="overlay hidden" aria-modal="true" role="dialog" aria-labelledby="tos-title">
+        <div class="modal-backdrop"></div>
+        <div class="tos-modal glass-panel">
+            <div class="tos-header">
+                <div class="tos-icon">⚖</div>
+                <h1 id="tos-title" class="tos-title">Legal Agreements</h1>
+                <p class="tos-subtitle">Please review and accept our terms before entering the guild.</p>
+            </div>
+
+            <!-- Tab Navigation -->
+            <div class="tos-tabs" role="tablist">
+                <button class="tos-tab active" data-tab="tos" role="tab" aria-selected="true" id="tab-tos">Terms of Service</button>
+                <button class="tos-tab" data-tab="modding" role="tab" aria-selected="false" id="tab-modding">Modding Policy</button>
+                <button class="tos-tab" data-tab="privacy" role="tab" aria-selected="false" id="tab-privacy">Privacy Policy</button>
+            </div>
+
+            <!-- ToS Content -->
+            <div id="tos-panel" class="tos-panel active" role="tabpanel" aria-labelledby="tab-tos">
+                <div class="tos-scrollarea" id="tos-scroll">
+                    <p class="loading-text">Loading Terms of Service...</p>
+                </div>
+            </div>
+
+            <!-- Modding Policy Content -->
+            <div id="modding-panel" class="tos-panel" role="tabpanel" aria-labelledby="tab-modding">
+                <div class="tos-scrollarea" id="modding-scroll">
+                    <p class="loading-text">Loading Modding Policy...</p>
+                </div>
+            </div>
+
+            <!-- Privacy Policy Content -->
+            <div id="privacy-panel" class="tos-panel" role="tabpanel" aria-labelledby="tab-privacy">
+                <div class="tos-scrollarea" id="privacy-scroll">
+                    <p class="loading-text">Loading Privacy Policy...</p>
+                </div>
+            </div>
+
+            <!-- Agreement Footer -->
+            <div class="tos-footer">
+                <label class="tos-checkbox-label" for="tos-agree-check">
+                    <input type="checkbox" id="tos-agree-check" aria-required="true">
+                    <span class="custom-checkbox"></span>
+                    I agree.
+                </label>
+                <div class="tos-actions">
+                    <button id="tos-return-btn" class="btn-ghost">Return</button>
+                    <button id="tos-accept-btn" class="btn-primary" disabled>Enter the Guild</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== MAIN MENU ========== -->
+    <div id="main-menu" class="overlay hidden" aria-label="Main Menu">
+        <div class="menu-bg-particles" id="particles-canvas"></div>
+        <div class="menu-overlay-gradient"></div>
+
+        <div class="menu-content">
+            <!-- Title Section -->
+            <div class="menu-title-block">
+                <div class="menu-title-ornament">⚔</div>
+                <h1 class="menu-game-title">The Last<br><span class="title-accent">Guildmaster</span></h1>
+                <p class="menu-tagline">Lead. Recruit. Survive.</p>
+            </div>
+
+            <!-- Menu Buttons -->
+            <nav class="menu-nav" aria-label="Main Menu Navigation">
+                <button id="menu-play-btn" class="menu-btn" data-action="play">
+                    <span class="menu-btn-icon">⚔</span>
+                    <span class="menu-btn-label">Play</span>
+                    <span class="menu-btn-arrow">→</span>
+                </button>
+                <button id="menu-settings-btn" class="menu-btn" data-action="settings">
+                    <span class="menu-btn-icon">⚙</span>
+                    <span class="menu-btn-label">Settings</span>
+                    <span class="menu-btn-arrow">→</span>
+                </button>
+                <button id="menu-credits-btn" class="menu-btn" data-action="credits">
+                    <span class="menu-btn-icon">📜</span>
+                    <span class="menu-btn-label">Credits</span>
+                    <span class="menu-btn-arrow">→</span>
+                </button>
+                <button id="menu-exit-btn" class="menu-btn menu-btn-danger" data-action="exit">
+                    <span class="menu-btn-icon">✕</span>
+                    <span class="menu-btn-label">Exit</span>
+                    <span class="menu-btn-arrow">→</span>
+                </button>
+            </nav>
+
+            <!-- Version / Legal Footer -->
+            <div class="menu-footer">
+                <div id="update-status" class="update-status status-checking">
+                    <span class="status-icon">⟳</span> Checking for updates...
+                </div>
+                <div class="menu-footer-info">
+                    <span class="menu-version">v0.1.0 Early Alpha</span>
+                    <span class="menu-sep">·</span>
+                    <span class="menu-license">Apache License 2.0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Corner Legal Link -->
+        <div class="menu-corner-legal">
+            <button class="menu-legal-link" id="menu-legal-btn" title="Re-read Legal Agreements">⚖</button>
+        </div>
+    </div>
+
+    <!-- ========== SETTINGS MODAL ========== -->
+    <div id="settings-modal" class="overlay hidden" aria-modal="true" role="dialog" aria-labelledby="settings-title">
+        <div class="modal-backdrop" data-close="settings-modal"></div>
+        <div class="sub-modal settings-modal-obsidian glass-panel">
+            <div class="sub-modal-header">
+                <div class="header-title-group">
+                    <span class="header-icon">⚙</span>
+                    <h2 id="settings-title">Guild Configuration</h2>
+                </div>
+                <button class="modal-close-btn" data-close="settings-modal" aria-label="Close">✕</button>
+            </div>
+            
+            <div class="sub-modal-body settings-layout">
+                <nav class="settings-tabs" role="tablist">
+                    <button class="settings-tab active" data-settings-tab="general" role="tab" aria-selected="true">
+                        <span class="tab-icon">⚙</span>
+                        <span class="tab-text">General</span>
+                    </button>
+                    <button class="settings-tab" data-settings-tab="audio" role="tab" aria-selected="false">
+                        <span class="tab-icon">🔊</span>
+                        <span class="tab-text">Audio</span>
+                    </button>
+                    <button class="settings-tab" data-settings-tab="video" role="tab" aria-selected="false">
+                        <span class="tab-icon">👁</span>
+                        <span class="tab-text">Video</span>
+                    </button>
+                    <button class="settings-tab" data-settings-tab="gameplay" role="tab" aria-selected="false">
+                        <span class="tab-icon">⚔</span>
+                        <span class="tab-text">Gameplay</span>
+                    </button>
+                </nav>
+
+                <div class="settings-content">
+                    <!-- General Category -->
+                    <div id="settings-general-panel" class="settings-panel active" role="tabpanel">
+                        <div class="settings-group-header">Guild Management</div>
+                        
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <label>Manual Chronography</label>
+                                <p class="setting-desc">Instantly record your guild's progress to the archives.</p>
+                            </div>
+                            <div class="setting-control">
+                                <button class="btn-primary-mini" id="settings-manual-save-btn">Save Game</button>
+                            </div>
+                        </div>
+
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <label for="setting-autosave-interval">Auto-Save Frequency</label>
+                                <p class="setting-desc">How often the world state is backed up automatically.</p>
+                            </div>
+                            <div class="setting-control">
+                                <select id="setting-autosave-interval" class="styled-select">
+                                    <option value="0">Disabled</option>
+                                    <option value="5">Every 5 Minutes</option>
+                                    <option value="10">Every 10 Minutes</option>
+                                    <option value="30" selected>Every 30 Minutes</option>
+                                    <option value="60">Every 1 Hour</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Audio Category -->
+                    <div id="settings-audio-panel" class="settings-panel" role="tabpanel">
+                        <div class="settings-group-header">Acoustics</div>
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <label for="setting-volume">Master Volume</label>
+                                <p class="setting-desc">Overall sound level of the realm.</p>
+                            </div>
+                            <div class="setting-control">
+                                <input type="range" id="setting-volume" min="0" max="100" value="80" class="styled-range">
+                                <span id="volume-display" class="setting-value">80%</span>
+                            </div>
+                        </div>
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <label for="setting-music">Atmospheric Music</label>
+                                <p class="setting-desc">Volume of the background orchestrations.</p>
+                            </div>
+                            <div class="setting-control">
+                                <input type="range" id="setting-music" min="0" max="100" value="60" class="styled-range">
+                                <span id="music-display" class="setting-value">60%</span>
+                            </div>
+                        </div>
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <label for="setting-fx">Sound Effects</label>
+                                <p class="setting-desc">Volume of combat and interface sounds.</p>
+                            </div>
+                            <div class="setting-control">
+                                <input type="range" id="setting-fx" min="0" max="100" value="70" class="styled-range">
+                                <span id="fx-display" class="setting-value">70%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Video Category -->
+                    <div id="settings-video-panel" class="settings-panel" role="tabpanel">
+                        <div class="settings-group-header">Visuals & Display</div>
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <label for="setting-window-mode">Display Mode</label>
+                                <p class="setting-desc">How the portal to this world is rendered.</p>
+                            </div>
+                            <select id="setting-window-mode" class="styled-select">
+                                <option value="fullscreen">Fullscreen</option>
+                                <option value="windowed">Windowed</option>
+                            </select>
+                        </div>
+                        <div class="setting-row" id="resolution-row">
+                            <div class="setting-info">
+                                <label for="setting-resolution">Resolution</label>
+                                <p class="setting-desc">Clarity of the visuals (Windowed only).</p>
+                            </div>
+                            <select id="setting-resolution" class="styled-select">
+                                <option value="1280x720">1280 x 720</option>
+                                <option value="1280x800">1280 x 800</option>
+                                <option value="1366x768">1366 x 768</option>
+                                <option value="1440x900">1440 x 900</option>
+                                <option value="1600x900">1600 x 900</option>
+                                <option value="1920x1080" selected>1920 x 1080</option>
+                                <option value="1920x1200">1920 x 1200</option>
+                                <option value="2560x1440">2560 x 1440</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Gameplay Category -->
+                    <div id="settings-gameplay-panel" class="settings-panel" role="tabpanel">
+                        <div class="settings-group-header">Chronicles & Safety</div>
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <label for="setting-crash-log">Report Transmissions</label>
+                                <p class="setting-desc">Send scroll logs if the game collapses.</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="setting-crash-log">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <label for="setting-debug-console">Developer Debug Console</label>
+                                <p class="setting-desc">Open an external console for real-time logs (Modders only).</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="setting-debug-console">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="sub-modal-footer settings-footer-ornamental">
+                <button class="btn-ghost" data-close="settings-modal">Discard Changes</button>
+                <button class="btn-primary" id="settings-save-btn">Apply Configuration</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== CREDITS MODAL ========== -->
+    <div id="credits-modal" class="overlay hidden" aria-modal="true" role="dialog" aria-labelledby="credits-title">
+        <div class="modal-backdrop" data-close="credits-modal"></div>
+        <div class="sub-modal glass-panel">
+            <div class="sub-modal-header">
+                <h2 id="credits-title">📜 Credits</h2>
+                <button class="modal-close-btn" data-close="credits-modal" aria-label="Close">✕</button>
+            </div>
+            <div class="sub-modal-body credits-body">
+                <div class="credit-section">
+                    <h3 class="credit-role">Game Design & Development</h3>
+                    <p class="credit-name accent-text">Lemoinie</p>
+                </div>
+                <div class="credit-divider"></div>
+                <div class="credit-section">
+                    <h3 class="credit-role">Engine Framework</h3>
+                    <p class="credit-name">Electron · HTML5 · CSS3 · JavaScript</p>
+                </div>
+                <div class="credit-divider"></div>
+                <div class="credit-section">
+                    <h3 class="credit-role">Typography</h3>
+                    <p class="credit-name">Cinzel & Inter · Google Fonts</p>
+                </div>
+                <div class="credit-divider"></div>
+                <div class="credit-section">
+                    <h3 class="credit-role">Open Source License</h3>
+                    <p class="credit-name">Apache License 2.0</p>
+                </div>
+                <div class="credits-thank-you">
+                    <p>✦ Thank you for playing ✦</p>
+                    <p class="credits-tagline">"Every guild begins with a single Guildmaster."</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== GAME APP ========== -->
+    <div id="app" class="hidden">
+        <!-- Sidebar Navigation -->
+        <aside id="sidebar" class="glass-panel">
+            <div class="logo">
+                <h1>Guildmaster</h1>
+            </div>
+            <nav>
+                <button class="nav-btn active" data-view="tavern">⚔ Tavern</button>
+                <button class="nav-btn" data-view="inn">🛏 Inn</button>
+                <button class="nav-btn" data-view="storage">📦 Storage</button>
+                <button class="nav-btn" data-view="expedition">🗺 Expeditions</button>
+                <button class="nav-btn" data-view="market">🏪 Market</button>
+                <button class="nav-btn" data-view="blacksmith">🔨 Blacksmith</button>
+                <button class="nav-btn" data-view="garden">🌿 Garden</button>
+                <button class="nav-btn" data-view="alchemist">⚗ Alchemist</button>
+                <button class="nav-btn" data-view="church">🕯 Church</button>
+            </nav>
+            <div class="sidebar-footer">
+                <button class="sidebar-menu-btn" id="back-to-menu-btn" title="Return to Main Menu">☰ Menu</button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main id="main-content">
+            <header id="top-bar" class="glass-panel">
+                <div class="resource-pill">
+                    <span class="label">Gold:</span>
+                    <span id="gold-value" class="value accent-text">1000</span>
+                </div>
+                <div class="resource-pill">
+                    <span class="label">Renown:</span>
+                    <span id="renown-value" class="value">0</span>
+                </div>
+                <div class="resource-pill">
+                    <span class="label">Adventurers:</span>
+                    <span id="adventurer-count" class="value">0 / 10</span>
+                </div>
+            </header>
+
+            <section id="view-container" class="glass-panel">
+                <!-- Building views will be injected here -->
+                <div id="loading-screen">
+                    <p>Initializing Guild...</p>
+                </div>
+            </section>
+        </main>
+
+        <!-- Notification Toast System -->
+        <div id="notification-container"></div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/menu.js" type="module"></script>
+    <script src="js/state.js" type="module"></script>
+    <script src="js/engine.js" type="module"></script>
+    <script src="js/ui.js" type="module"></script>
+</body>
+</html>

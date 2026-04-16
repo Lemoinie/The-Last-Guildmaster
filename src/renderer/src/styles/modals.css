@@ -1,0 +1,427 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   MODALS & OVERLAYS (Legal, Settings, Credits)
+───────────────────────────────────────────────────────────────────────────── */
+
+/* --- Terms of Service Modal --- */
+.tos-modal {
+    position: relative;
+    z-index: 1;
+    width: 95%;
+    max-width: 1200px;
+    height: 92vh;
+    max-height: 95vh;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgba(125, 211, 252, 0.15);
+    box-shadow: 0 0 80px rgba(125, 211, 252, 0.08), 0 30px 80px rgba(0, 0, 0, 0.9);
+    overflow: hidden;
+}
+
+.tos-header {
+    padding: 28px 32px 20px;
+    text-align: center;
+    border-bottom: 1px solid var(--glass-border);
+    background: rgba(125, 211, 252, 0.03);
+}
+
+.tos-title {
+    font-family: 'Cinzel', serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+}
+
+.tos-subtitle {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.tos-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--glass-border);
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.tos-tab {
+    flex: 1;
+    padding: 12px 8px;
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+}
+
+.tos-tab.active {
+    color: var(--accent-primary);
+    border-bottom-color: var(--accent-primary);
+    background: rgba(125, 211, 252, 0.04);
+}
+
+.tos-panel {
+    display: none;
+    flex: 1;
+    overflow: hidden;
+}
+
+.tos-panel.active { display: flex; flex-direction: column; }
+
+.tos-scrollarea {
+    flex: 1;
+    overflow-y: auto;
+    padding: 32px 48px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: rgba(224, 224, 224, 0.9);
+}
+
+.tos-scrollarea h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--accent-primary);
+    margin-top: 24px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.tos-scrollarea p {
+    margin-bottom: 4px;
+}
+
+.tos-scrollarea ul, .tos-scrollarea ol {
+    padding-left: 24px;
+    margin: 8px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.tos-scrollarea blockquote {
+    border-left: 3px solid var(--accent-primary);
+    padding: 12px 20px;
+    background: rgba(125, 211, 252, 0.05);
+    border-radius: 0 8px 8px 0;
+    font-style: italic;
+    color: var(--text-secondary);
+    margin: 12px 0;
+}
+
+.tos-scrollarea code {
+    background: rgba(255, 255, 255, 0.08);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+    color: var(--accent-primary);
+}
+
+.tos-scrollarea table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 0.9rem;
+    border: 1px solid var(--glass-border);
+}
+
+.tos-scrollarea th, .tos-scrollarea td {
+    border: 1px solid var(--glass-border);
+    padding: 12px 16px;
+    text-align: left;
+}
+
+.tos-scrollarea th {
+    background: rgba(125, 211, 252, 0.05);
+    color: var(--text-primary);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+}
+
+.tos-scrollarea td {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.tos-summary-box {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    padding: 14px 16px;
+    background: rgba(125, 211, 252, 0.05);
+    border: 1px solid rgba(125, 211, 252, 0.15);
+    border-radius: 8px;
+    font-size: 0.87rem;
+    line-height: 1.6;
+    color: var(--text-primary);
+}
+
+.tos-warning-box {
+    padding: 12px 16px;
+    background: rgba(255, 49, 49, 0.07);
+    border: 1px solid rgba(255, 49, 49, 0.25);
+    border-radius: 8px;
+    font-size: 0.86rem;
+    line-height: 1.6;
+}
+
+.tos-version-note {
+    margin-top: 8px;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+}
+
+.tos-footer {
+    padding: 20px 32px;
+    border-top: 1px solid var(--glass-border);
+    background: rgba(0, 0, 0, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.tos-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.tos-checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    flex: 1;
+    min-width: 200px;
+    user-select: none;
+}
+
+.custom-checkbox {
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    transition: all 0.2s ease;
+}
+
+.tos-checkbox-label input[type="checkbox"] {
+    display: none;
+}
+
+.tos-checkbox-label input:checked + .custom-checkbox {
+    background: var(--accent-primary);
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 10px rgba(125, 211, 252, 0.4);
+}
+
+.tos-checkbox-label input:checked + .custom-checkbox::after {
+    content: '✓';
+    font-size: 13px;
+    color: black;
+    font-weight: 900;
+}
+
+/* --- Container Fixes (Centering) --- */
+#tos-overlay,
+#settings-modal,
+#credits-modal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(6px);
+}
+
+/* --- Settings & Sub-Modals --- */
+.sub-modal {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 680px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: max-width 0.3s ease;
+}
+
+/* Wider Settings Modal */
+.settings-modal-obsidian {
+    max-width: 920px;
+}
+
+.sub-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px 32px;
+    border-bottom: 1px solid var(--glass-border);
+    background: linear-gradient(to right, rgba(125, 211, 252, 0.05), transparent);
+}
+
+.header-title-group {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.sub-modal-header h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 1.3rem;
+    color: var(--text-primary);
+    white-space: nowrap;
+}
+
+.modal-close-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    cursor: pointer;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-secondary);
+    display: grid;
+    place-items: center;
+}
+
+.modal-close-btn:hover {
+    background: rgba(255, 49, 49, 0.1);
+    border-color: var(--accent-red);
+    color: var(--accent-red);
+}
+
+.sub-modal-body {
+    padding: 24px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.sub-modal-footer {
+    padding: 16px 28px;
+    border-top: 1px solid var(--glass-border);
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+/* --- Settings Specific --- */
+.settings-layout {
+    display: flex;
+    flex-direction: row !important;
+    height: 460px;
+    padding: 0 !important;
+}
+
+.settings-tabs {
+    width: 180px;
+    background: rgba(0, 0, 0, 0.2);
+    border-right: 1px solid var(--glass-border);
+    display: flex;
+    flex-direction: column;
+    padding: 20px 0;
+}
+
+.settings-tab {
+    background: transparent;
+    border: none;
+    border-left: 3px solid transparent;
+    color: var(--text-secondary);
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+}
+
+.settings-tab.active {
+    color: var(--accent-primary);
+    background: rgba(125, 211, 252, 0.04);
+    border-left-color: var(--accent-primary);
+}
+
+.settings-content {
+    flex: 1;
+    padding: 32px 40px;
+    overflow-y: auto;
+    background: radial-gradient(circle at top right, rgba(125, 211, 252, 0.02), transparent);
+}
+
+.settings-group-header {
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--accent-primary);
+    opacity: 0.5;
+    margin-bottom: 24px;
+}
+
+.settings-panel {
+    display: none;
+    flex-direction: column;
+    gap: 24px;
+    animation: panelFadeIn 0.3s ease-out;
+}
+
+.settings-panel.active {
+    display: flex;
+}
+
+.setting-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 32px;
+    margin-bottom: 20px;
+}
+
+.setting-info label {
+    display: block;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.setting-desc {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+/* --- Credits Specific --- */
+.credit-section {
+    padding: 18px 28px;
+    text-align: center;
+}
+
+.credit-role {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+}
+
+.credit-name {
+    font-family: 'Cinzel', serif;
+    font-size: 1.05rem;
+    color: var(--text-primary);
+}
+
+.credit-divider {
+    height: 1px;
+    background: var(--glass-border);
+    margin: 0 28px;
+}
+
+.credits-thank-you {
+    padding: 24px 28px;
+    text-align: center;
+    background: rgba(125, 211, 252, 0.03);
+}

@@ -2,7 +2,7 @@
 
 **The Last Guildmaster** is a premium, single-player RPG guild management game. Take on the role of the Guildmaster, recruit brave adventurers, manage your resources, and lead your guild to glory in a dark fantasy world.
 
-Built as a standalone desktop application using **Electron**, the game features a modern **Dark Glassmorphic** aesthetic with high-contrast neon accents and full offline support.
+Built as a standalone desktop application using **Electron**, **Svelte 5**, **TypeScript**, and **Vite**, the game features a modern **Dark Glassmorphic** aesthetic with high-contrast neon accents and full offline support.
 
 ---
 
@@ -23,8 +23,8 @@ After installation, you can launch the game via the desktop shortcut or by runni
 
 Your progress is automatically saved locally on your machine. We use `localStorage` to ensure your guild's data remains persistent even after app updates.
 
-*   **Save File Location**: `%APPDATA%\the-last-guildmaster\Local Storage`
-    *   (Typically: `C:\Users\<YourUsername>\AppData\Roaming\the-last-guildmaster\Local Storage`)
+*   **Save File Location**: `%APPDATA%\the-last-guildmaster\saves`
+    *   (Typically: `C:\Users\<YourUsername>\AppData\Roaming\the-last-guildmaster\saves`)
 *   **Data Integrity**: Do not modify or delete the files in this directory unless you wish to reset your game progress entirely.
 
 ---
@@ -34,7 +34,7 @@ Your progress is automatically saved locally on your machine. We use `localStora
 If you are developing or modifying the game:
 
 ### Prerequisites
-*   [Node.js](https://nodejs.org/) (Latest LTS recommended)
+*   [Node.js](https://nodejs.org/) (v20.19+ or v22.12+)
 *   npm (comes with Node.js)
 
 ### Setup
@@ -49,14 +49,40 @@ If you are developing or modifying the game:
     ```
 
 ### Development Commands
-*   **Launch in Debug Mode**: Runs the Electron app with hot-reloading (if configured) or standard launch.
+*   **Launch in Dev Mode**: Runs the Electron app with Vite HMR for instant UI updates.
     ```bash
-    npm start
+    npm run dev
     ```
-*   **Build Installer**: Generates a production-ready Windows installer (`.exe`) in the `dist/` folder.
+*   **Build for Production**: Compiles the TypeScript & Svelte source into optimized bundles.
     ```bash
     npm run build
     ```
+*   **Package Installer**: Generates a production-ready Windows installer (`.exe`) in the `dist/` folder.
+    ```bash
+    npm run postbuild
+    ```
+
+### Tech Stack
+| Layer | Technology |
+|-------|-----------|
+| **Framework** | Electron |
+| **UI** | Svelte 5 (Runes) |
+| **Language** | TypeScript |
+| **Build Tool** | electron-vite (Vite 6) |
+| **Packaging** | electron-builder |
+| **Auto-Update** | electron-updater |
+
+### Project Structure
+```
+src/
+├── main/          → Electron Main Process (Node.js)
+├── preload/       → Context Bridge (IPC type-safe API)
+└── renderer/      → Svelte 5 UI (Browser)
+    └── src/
+        ├── components/    → Svelte components
+        ├── lib/           → Stores, engine, logger
+        └── styles/        → Global CSS (glassmorphic theme)
+```
 
 ---
 
@@ -75,9 +101,10 @@ If you are developing or modifying the game:
 
 ## 🎨 Visual Direction
 The game utilizes a **Dark Glassmorphism** design system with:
-*   **Primary Accent**: `#00FF41` (Neon Green)
-*   **Secondary Accent**: `#FF3131` (Neon Red)
-*   **Backdrop**: 15px Gaussian Blur with deep charcoal panels.
+*   **Primary Accent**: `#7dd3fc` (Cold Spiritual Blue)
+*   **Alert Accent**: `#ef4444` (Cold Red)
+*   **Backdrop**: 20px Gaussian Blur with deep charcoal panels.
+*   **Typography**: Cinzel (headings) + Inter (body) via Google Fonts.
 *   **Assets**: All building backgrounds are stored locally in `assets/` for zero-latency loading.
 
 ---

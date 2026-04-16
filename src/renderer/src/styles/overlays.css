@@ -1,0 +1,38 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   OVERLAY / FADE SYSTEM
+───────────────────────────────────────────────────────────────────────────── */
+.overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+}
+
+.overlay.visible {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.overlay.hidden {
+    display: none;
+}
+
+/* Override: visible wins over hidden */
+.overlay.visible.hidden {
+    display: block;
+}
+
+#tos-overlay {
+    z-index: 500;
+    /* Always on top of other overlays */
+}
+
+#app.hidden {
+    display: none !important;
+}
+
+#app.visible {
+    display: flex;
+}

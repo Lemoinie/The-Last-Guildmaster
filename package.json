@@ -3,21 +3,38 @@
   "version": "0.1.0",
   "description": "A single-player RPG guild management game.",
   "repository": "https://github.com/Lemoinie/The-Last-Guildmaster",
-  "main": "main.js",
+  "main": "./out/main/index.js",
   "author": {
-    "name": "Lemoinie"
+    "name": "Lemoinine"
   },
   "scripts": {
-    "start": "electron .",
-    "build": "electron-builder build --win"
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "postbuild": "electron-builder build --win",
+    "start": "electron-vite preview"
   },
   "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^5.1.1",
     "electron": "^41.2.0",
-    "electron-builder": "^25.0.0"
+    "electron-builder": "^25.0.0",
+    "electron-vite": "^5.0.0",
+    "svelte": "^5.55.4",
+    "typescript": "^6.0.2",
+    "vite": "^6.4.2"
   },
   "build": {
-    "appId": "com.lemoinie.lastguildmaster",
+    "appId": "com.lemoinine.lastguildmaster",
     "productName": "The Last Guildmaster",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "out/**/*"
+    ],
+    "extraResources": [
+      { "from": "legal", "to": "legal" },
+      { "from": "assets", "to": "assets" }
+    ],
     "win": {
       "target": "nsis"
     },
@@ -29,6 +46,7 @@
     }
   },
   "dependencies": {
-    "electron-updater": "^6.8.3"
+    "electron-updater": "^6.8.3",
+    "marked": "^18.0.0"
   }
 }
