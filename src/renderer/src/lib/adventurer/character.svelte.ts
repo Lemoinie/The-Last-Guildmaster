@@ -1,20 +1,21 @@
 /**
  * character.svelte.ts — Character Class (Svelte 5 Runes)
  *
- * Composes Attributes, Job, Trait, and Skills into a single entity.
- * Uses $state for mutable data (level, xp) and $derived for computed values.
+ * Composes Attributes, Job, Trait, Skills, and Equipment into a single entity.
+ * Uses $state for mutable data (level, xp, gear) and $derived for computed values.
  *
  * Growth formula (Java RPG-style exponential):
  *   statGain = floor(growthRate * (level ^ 1.2))
  *
- * This means early levels give small gains, but by level 20+
- * stats start scaling dramatically — rewarding long-term investment.
+ * Total stat pipeline:
+ *   Base Stats + Equipment Stats → Trait Modifier → Final Total
  */
 
 import { Attributes } from './attributes.svelte'
 import { getJob, type Job } from './jobs'
 import { getTrait } from './traits'
 import { getSkill, type Skill } from './skills'
+import { Weapon, Armor, Accessory, EMPTY_STATS, type EquipmentStats } from './items.svelte'
 import type { TraitId, CharacterData } from './types'
 
 /** XP required to reach the next level: 50 * level^1.8 */
@@ -36,6 +37,11 @@ export class Character {
   private _jobId = $state('squire')
   private _traitId = $state<TraitId | null>(null)
   private _skillIds = $state<string[]>([])
+
+  // --- Equipment Slots ---
+  weapon = $state<Weapon | null>(null)
+  armor = $state<Armor | null>(null)
+  accessory = $state<Accessory | null>(null)
 
   // --- Derived ---
   job = $derived<Job>(getJob(this._jobId))
@@ -59,6 +65,46 @@ export class Character {
     this._jobId = jobId
     this._traitId = traitId
     this.attributes = new Attributes(10, 10, 10, 10, getTrait(traitId))
+  }
+
+  // ─── Equipment ──────────────────────────────────────────────────────────────
+
+  /** Equip a weapon (returns the previously equipped weapon, if any) */
+  equipWeapon(item: Weapon | null): Weapon | null {
+    const prev = this.weapon
+    this.weapon = item
+    this.syncEquipmentStats()
+    return prev
+  }
+
+  /** Equip armor (returns the previously equipped armor, if any) */
+  equipArmor(item: Armor | null): Armor | null {
+    const prev = this.armor
+    this.armor = item
+    this.syncEquipmentStats()
+    return prev
+  }
+
+  /** Equip an accessory (returns the previously equipped accessory, if any) */
+  equipAccessory(item: Accessory | null): Accessory | null {
+    const prev = this.accessory
+    this.accessory = item
+    this.syncEquipmentStats()
+    return prev
+  }
+
+  /** Sum all equipped gear stats and push to Attributes */
+  private syncEquipmentStats(): void {
+    const w = this.weapon?.stats ?? EMPTY_STATS
+    const a = this.armor?.stats ?? EMPTY_STATS
+    const r = this.accessory?.stats ?? EMPTY_STATS
+
+    this.attributes.setEquipmentBonuses({
+      str: w.str + a.str + r.str,
+      int: w.int + a.int + r.int,
+      dex: w.dex + a.dex + r.dex,
+      con: w.con + a.con + r.con
+    })
   }
 
   // ─── Progression ────────────────────────────────────────────────────────────
@@ -136,7 +182,10 @@ export class Character {
       baseStr: this.attributes.str,
       baseInt: this.attributes.int,
       baseDex: this.attributes.dex,
-      baseCon: this.attributes.con
+      baseCon: this.attributes.con,
+      weaponId: this.weapon?.id ?? null,
+      armorId: this.armor?.id ?? null,
+      accessoryId: this.accessory?.id ?? null
     }
   }
 
@@ -150,6 +199,8 @@ export class Character {
     char.attributes.dex = data.baseDex
     char.attributes.con = data.baseCon
     char._skillIds = [...data.skillIds]
+    // Equipment restoration is handled by the inventory system
+    // which calls equipWeapon/equipArmor/equipAccessory after loading
     return char
   }
 }

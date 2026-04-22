@@ -43,4 +43,7 @@ export interface CharacterData {
   baseInt: number
   baseDex: number
   baseCon: number
+  weaponId: string | null
+  armorId: string | null
+  accessoryId: string | null
 }

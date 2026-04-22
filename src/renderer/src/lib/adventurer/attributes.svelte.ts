@@ -1,12 +1,17 @@
 /**
  * attributes.svelte.ts — Reactive Attribute System using Svelte 5 Runes
  *
- * Base stats are mutable via $state.
- * Total stats are computed via $derived, applying trait modifiers.
- * Growth formula: base + floor(growthRate * (level^1.2))
+ * Total stat calculation pipeline:
+ *   1. Start with base stat (grown by levelUp)
+ *   2. Add equipment bonus (weapon + armor + accessory)
+ *   3. Apply trait modifier (e.g. Bookworm: +10% Int, -5% Dex/Con)
+ *   4. Floor the result → final integer
+ *
+ * All steps are $derived — zero manual updates needed.
  */
 
 import type { StatKey, Trait } from './types'
+import type { EquipmentStats } from './items.svelte'
 
 export class Attributes {
   // --- Base stats (mutable, grown on level-up) ---
@@ -18,11 +23,17 @@ export class Attributes {
   // --- Active trait (null = no trait) ---
   trait = $state<Trait | null>(null)
 
-  // --- Total stats (auto-computed with trait modifiers) ---
-  totalStr = $derived(this.applyModifier('str', this.str))
-  totalInt = $derived(this.applyModifier('int', this.int))
-  totalDex = $derived(this.applyModifier('dex', this.dex))
-  totalCon = $derived(this.applyModifier('con', this.con))
+  // --- Equipment stat references (set by Character when gear changes) ---
+  equipStr = $state(0)
+  equipInt = $state(0)
+  equipDex = $state(0)
+  equipCon = $state(0)
+
+  // --- Total stats: Base + Equipment, then Trait modifier ---
+  totalStr = $derived(this.applyModifier('str', this.str + this.equipStr))
+  totalInt = $derived(this.applyModifier('int', this.int + this.equipInt))
+  totalDex = $derived(this.applyModifier('dex', this.dex + this.equipDex))
+  totalCon = $derived(this.applyModifier('con', this.con + this.equipCon))
 
   // --- Derived combat values ---
   maxHp = $derived(Math.floor(this.totalCon * 5 + this.totalStr * 2))
@@ -39,10 +50,21 @@ export class Attributes {
     this.trait = trait
   }
 
-  /** Apply trait modifier to a base stat. Returns the final integer value. */
-  private applyModifier(stat: StatKey, base: number): number {
-    if (!this.trait) return base
+  /** Sync equipment bonuses from the character's equipped gear */
+  setEquipmentBonuses(stats: EquipmentStats): void {
+    this.equipStr = stats.str
+    this.equipInt = stats.int
+    this.equipDex = stats.dex
+    this.equipCon = stats.con
+  }
+
+  /**
+   * Apply trait modifier to a combined (base + equip) stat.
+   * e.g. Bookworm: int * 1.10, dex * 0.95, con * 0.95
+   */
+  private applyModifier(stat: StatKey, combined: number): number {
+    if (!this.trait) return combined
     const mod = this.trait.modifiers[stat] ?? 0
-    return Math.floor(base * (1 + mod))
+    return Math.floor(combined * (1 + mod))
   }
 }
