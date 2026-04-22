@@ -38,6 +38,7 @@ export interface GameStateData {
   logs: string[]
   lastSave: number
   debugConsole: boolean
+  devMode: boolean
   autoSaveInterval: number
 }
 
@@ -61,6 +62,7 @@ const initialState: GameStateData = {
   logs: ['Welcome, Guildmaster. Your journey begins.'],
   lastSave: Date.now(),
   debugConsole: false,
+  devMode: false,
   autoSaveInterval: 30
 }
 

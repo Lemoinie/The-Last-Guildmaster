@@ -5,6 +5,8 @@
   import CreditsModal from './components/CreditsModal.svelte'
   import GameApp from './components/GameApp.svelte'
   import Toast from './components/Toast.svelte'
+  import DevBubble from './components/DevBubble.svelte'
+  import { Game } from './lib/stores/game.svelte'
 
   let currentScreen = $state<'menu' | 'game'>('menu')
   let showLegal = $state(false)
@@ -12,6 +14,9 @@
   let showCredits = $state(false)
   let toastMessage = $state('')
   let toastVisible = $state(false)
+
+  // Dev mode — reactive, driven by Game.state so any settings modal updates it instantly
+  const devMode = $derived(Game.state.devMode)
 
   function showToast(message: string) {
     toastMessage = message
@@ -67,7 +72,11 @@
   />
 {/if}
 
+<!-- Dev Bubble — only shown during game, only when Dev Mode is active -->
+{#if devMode && currentScreen === 'game'}
+  <DevBubble {showToast} />
+{/if}
+
 {#if toastVisible}
   <Toast message={toastMessage} />
 {/if}
-

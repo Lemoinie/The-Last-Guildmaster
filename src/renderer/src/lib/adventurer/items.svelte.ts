@@ -227,6 +227,53 @@ export class Accessory extends Equipment {
   }
 }
 
+// ─── Summoning Stone (Special) ────────────────────────────────────────────────
+
+/**
+ * SummoningStone — Consumable special item used for active recruitment.
+ * Grade determines the rarity pool of adventurers that can be summoned.
+ * Always stackable. Consuming one stone begins the summon.
+ */
+export type StoneGrade = 'crude' | 'refined' | 'arcane' | 'legendary'
+
+export const STONE_GRADE_CONFIG: Record<StoneGrade, {
+  label: string
+  icon: string
+  rarityPool: ItemRarity[]
+  description: string
+  color: string
+}> = {
+  crude:     { label: 'Crude Stone',     icon: '🪨', rarityPool: ['common'],                           description: 'Summons a common adventurer.',                   color: '#94a3b8' },
+  refined:   { label: 'Refined Stone',   icon: '💠', rarityPool: ['common', 'uncommon'],               description: 'Summons an uncommon or common adventurer.',       color: '#4ade80' },
+  arcane:    { label: 'Arcane Stone',    icon: '🔷', rarityPool: ['uncommon', 'rare', 'epic'],          description: 'Summons a rare or epic adventurer.',              color: '#60a5fa' },
+  legendary: { label: 'Legendary Stone', icon: '🌟', rarityPool: ['epic', 'legendary'],                 description: 'Summons an epic or legendary adventurer.',        color: '#fbbf24' }
+}
+
+export class SummoningStone extends Item {
+  readonly grade: StoneGrade
+
+  constructor(grade: StoneGrade = 'crude', quantity: number = 1) {
+    const cfg = STONE_GRADE_CONFIG[grade]
+    super(
+      `summoning_stone_${grade}`,
+      cfg.label,
+      cfg.description,
+      cfg.icon,
+      grade === 'legendary' ? 'legendary' : grade === 'arcane' ? 'rare' : grade === 'refined' ? 'uncommon' : 'common',
+      true,   // stackable
+      quantity
+    )
+    this.grade = grade
+  }
+
+  /** Consume one stone. Returns the grade for summon resolution. Throws if empty. */
+  consume(): StoneGrade {
+    if (this.quantity <= 0) throw new Error('No summoning stones remaining.')
+    this.quantity -= 1
+    return this.grade
+  }
+}
+
 // ─── Item Registry (Predefined Items) ─────────────────────────────────────────
 
 export const MATERIALS: Record<string, () => Material> = {

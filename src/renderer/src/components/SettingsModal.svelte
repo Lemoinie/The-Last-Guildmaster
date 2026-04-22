@@ -16,6 +16,7 @@
   let fx = $state(parseInt(localStorage.getItem('tlg_volume_fx') || '70'))
   let crashLog = $state(localStorage.getItem('tlg_crash_log') === '1')
   let debugConsole = $state(localStorage.getItem('tlg_debug_console') === '1')
+  let devMode = $state(Game.state.devMode)
   let windowMode = $state(localStorage.getItem('tlg_window_mode') || 'fullscreen')
   let resolution = $state(localStorage.getItem('tlg_resolution') || '1920x1080')
   let autoSaveInterval = $state(localStorage.getItem('tlg_autosave_interval') || '30')
@@ -43,9 +44,11 @@
     localStorage.setItem('tlg_window_mode', windowMode)
     localStorage.setItem('tlg_resolution', resolution)
     localStorage.setItem('tlg_autosave_interval', autoSaveInterval)
+    localStorage.setItem('tlg_dev_mode', devMode ? '1' : '0')
 
     // Sync with Game state
     Game.state.debugConsole = debugConsole
+    Game.state.devMode = devMode
     Game.state.autoSaveInterval = parseInt(autoSaveInterval)
     Game.startAutoSaveTimer()
     Game.save()
@@ -83,7 +86,7 @@
         </div>
 
         <div class="sub-modal-body settings-layout">
-            <nav class="settings-tabs" role="tablist">
+            <div class="settings-tabs" role="tablist">
                 {#each settingsTabs as tab}
                     <button
                         class="settings-tab"
@@ -96,7 +99,7 @@
                         <span class="tab-text">{tab.label}</span>
                     </button>
                 {/each}
-            </nav>
+            </div>
 
             <div class="settings-content">
                 <!-- General Category -->
@@ -216,6 +219,18 @@
                         </div>
                         <label class="toggle-switch">
                             <input type="checkbox" id="setting-debug-console" bind:checked={debugConsole}>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="settings-group-header" style="margin-top: 16px;">Developer</div>
+                    <div class="setting-row">
+                        <div class="setting-info">
+                            <label for="setting-dev-mode">Dev Mode</label>
+                            <p class="setting-desc">Show the developer toolkit bubble in-game. Disabled by default.</p>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="setting-dev-mode" bind:checked={devMode}>
                             <span class="toggle-slider"></span>
                         </label>
                     </div>

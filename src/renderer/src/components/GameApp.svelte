@@ -3,6 +3,7 @@
   import { Game } from '../lib/stores/game.svelte'
   import { GameEngine } from '../lib/engine'
   import { Logger } from '../lib/logger'
+  import SettingsModal from './SettingsModal.svelte'
 
   interface Props {
     onbacktomenu: () => void
@@ -10,6 +11,8 @@
   }
 
   let { onbacktomenu, showToast }: Props = $props()
+
+  let showSettings = $state(false)
 
   let currentView = $state('tavern')
   let viewHtml = $state('')
@@ -170,6 +173,7 @@
             {/each}
         </nav>
         <div class="sidebar-footer">
+            <button class="sidebar-menu-btn" id="open-settings-btn" title="Settings" onclick={() => showSettings = true}>⚙ Settings</button>
             <button class="sidebar-menu-btn" id="back-to-menu-btn" title="Return to Main Menu" onclick={onbacktomenu}>☰ Menu</button>
         </div>
     </aside>
@@ -199,6 +203,13 @@
     <!-- Notification Toast System -->
     <div id="notification-container"></div>
 </div>
+
+{#if showSettings}
+  <SettingsModal
+    onclose={() => showSettings = false}
+    {showToast}
+  />
+{/if}
 
 <style>
     #notification-container {
