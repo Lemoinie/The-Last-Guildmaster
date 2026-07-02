@@ -14,18 +14,23 @@ const appVersion = packageJson.version
 // Standard paths for Inno Setup compiler
 const ISCC_PATHS = [
   'ISCC.exe', // if on PATH
+  path.join(process.env.LOCALAPPDATA || '', 'Programs\\Inno Setup 6\\ISCC.exe'),
   'C:\\Program Files (x86)\\Inno Setup 6\\ISCC.exe',
   'C:\\Program Files\\Inno Setup 6\\ISCC.exe'
 ]
 
 function findISCC() {
   for (const isccPath of ISCC_PATHS) {
-    try {
-      // Test if executable can run
-      execSync(`"${isccPath}" /?`, { stdio: 'ignore' })
+    if (isccPath === 'ISCC.exe') {
+      try {
+        execSync('where ISCC.exe', { stdio: 'ignore' })
+        return 'ISCC.exe'
+      } catch {
+        continue
+      }
+    }
+    if (fs.existsSync(isccPath)) {
       return isccPath
-    } catch {
-      continue
     }
   }
   return null
