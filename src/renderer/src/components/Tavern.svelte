@@ -1,9 +1,8 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte'
-  import { Tavern, type PendingRecruit } from '../lib/game/tavern.svelte'
-  import { Game } from '../lib/stores/game.svelte'
-  import { STONE_GRADE_CONFIG, type StoneGrade } from '../lib/adventurer/items.svelte'
-  import { RARITY_CONFIG } from '../lib/adventurer/items.svelte'
+  import { Game, calcPatrons, calcRecruitInterval, type PendingRecruitData } from '../lib/stores/game.svelte'
+  import { STONE_GRADE_CONFIG, type StoneGrade, RARITY_CONFIG, type ItemRarity } from '../lib/adventurer/items.svelte'
+  import { Character } from '../lib/adventurer/character.svelte'
 
   interface Props {
     showToast: (msg: string) => void
@@ -21,98 +20,95 @@
 
   let countdownInterval: ReturnType<typeof setInterval> | null = null
 
-  // --- Derived from Tavern store ---
-  const renown = $derived(Game.state.renown)
-  const patronsThisTick = $derived(Tavern.calcPatrons(renown))
+  // --- Derived from Game store ---
+  const renown = $derived(Game.state.economy.renown)
+  const patronsThisTick = $derived(calcPatrons(renown))
   const goldPerTick = $derived(patronsThisTick * 2)
 
+  // Map plain pending recruits data to Character class instances for attributes/derived properties
+  const pendingRecruits = $derived(
+    Game.state.tavern.pendingRecruits.map(r => ({
+      id: r.id,
+      character: Character.deserialize(r.character),
+      rarity: r.rarity,
+      expiresAt: r.expiresAt
+    }))
+  )
+
+  const summoningStones = $derived({
+    crude: { quantity: Game.state.tavern.summoningStones.crude },
+    refined: { quantity: Game.state.tavern.summoningStones.refined },
+    arcane: { quantity: Game.state.tavern.summoningStones.arcane },
+    legendary: { quantity: Game.state.tavern.summoningStones.legendary }
+  })
+
+  const totalStones = $derived(
+    Object.values(Game.state.tavern.summoningStones).reduce((sum, q) => sum + q, 0)
+  )
+
+  const currentAbsoluteHours = $derived(
+    Game.state.world.time.hour + (Game.state.world.time.day - 1) * 24 + (Game.state.world.time.month - 1) * 28 * 24
+  )
+  const intervalHours = $derived(
+    Math.floor(Game.state.tavern.passiveRecruitIntervalMs / 60_000)
+  )
+
   function updateCountdown() {
-    const remaining = Tavern.lastPassiveRecruitAt + Tavern.passiveRecruitIntervalMs - Date.now()
-    if (remaining <= 0) {
+    const targetHour = Game.state.tavern.lastPassiveRecruitAt + intervalHours
+    const remainingHours = targetHour - currentAbsoluteHours
+    if (remainingHours <= 0) {
       nextRecruitIn = 'Adventurers are at the door!'
       return
     }
-    const h = Math.floor(remaining / 3_600_000)
-    const m = Math.floor((remaining % 3_600_000) / 60_000)
-    const s = Math.floor((remaining % 60_000) / 1_000)
+    const remainingSeconds = remainingHours * 60 - Game.state.world.time.tick
+    if (remainingSeconds <= 0) {
+      nextRecruitIn = 'Adventurers are at the door!'
+      return
+    }
+    const h = Math.floor(remainingSeconds / 3600)
+    const m = Math.floor((remainingSeconds % 3600) / 60)
+    const s = remainingSeconds % 60
     nextRecruitIn = `${h}h ${m}m ${s}s`
   }
 
   onMount(() => {
-    // Process offline income catch-up
-    const offlineGold = Tavern.processOfflineIncome(Game.state.renown)
-    if (offlineGold > 0) {
-      Game.state.gold += offlineGold
-      showToast(`The tavern earned ${offlineGold}g while you were away!`)
-    }
-
-    // Check if passive recruits arrived while offline
-    const arrived = Tavern.checkPassiveRecruits(Game.state.renown)
-    if (arrived.length > 0) {
-      showToast(`${arrived.length} adventurer${arrived.length > 1 ? 's' : ''} are waiting in the tavern!`)
-      activeTab = 'recruits'
-    }
-
-    // Start live timers
-    Tavern.start(
-      () => Game.state.renown,
-      (gold) => { Game.state.gold += gold },
-      (recruits) => {
-        showToast(`${recruits.length} new adventurer${recruits.length > 1 ? 's' : ''} arrived!`)
-      }
-    )
-
     // Start countdown display
     updateCountdown()
     countdownInterval = setInterval(updateCountdown, 1000)
   })
 
   onDestroy(() => {
-    Tavern.stop()
     if (countdownInterval) clearInterval(countdownInterval)
   })
 
-  function handleAccept(recruit: PendingRecruit) {
-    if (Game.state.adventurers.length >= Game.state.maxAdventurers) {
+  function handleAccept(recruit: { id: string; character: Character }) {
+    if (Game.state.roster.length >= Game.state.settings.maxAdventurers) {
       showToast('The inn is full! Dismiss someone first.')
       return
     }
-    const char = Tavern.acceptRecruit(recruit.id)
-    if (char) {
-      // Add to the legacy game state roster (simple format for now)
-      Game.state.adventurers.push({
-        name: char.name,
-        class: char.jobId,
-        level: char.level,
-        id: Date.now()
-      })
-      showToast(`${char.name} joined the guild!`)
+    const success = Game.recruitCharacter(recruit.id)
+    if (success) {
+      showToast(`${recruit.character.name} joined the guild!`)
     }
   }
 
-  function handleDismiss(recruit: PendingRecruit) {
-    Tavern.dismissRecruit(recruit.id)
+  function handleDismiss(recruit: { id: string }) {
+    Game.dismissRecruit(recruit.id)
   }
 
   function handleSummon(grade: StoneGrade) {
-    const stone = Tavern.summoningStones[grade]
-    if (stone.quantity <= 0) {
+    const qty = Game.state.tavern.summoningStones[grade] || 0
+    if (qty <= 0) {
       showToast(`No ${STONE_GRADE_CONFIG[grade].label}s remaining.`)
       return
     }
-    if (Game.state.adventurers.length >= Game.state.maxAdventurers) {
+    if (Game.state.roster.length >= Game.state.settings.maxAdventurers) {
       showToast('The inn is full! Dismiss someone first.')
       return
     }
-    const char = Tavern.summon(grade)
-    if (char) {
-      Game.state.adventurers.push({
-        name: char.name,
-        class: char.jobId,
-        level: char.level,
-        id: Date.now()
-      })
-      showToast(`${char.name} answered the summon!`)
+    const charData = Game.summonCharacter(grade)
+    if (charData) {
+      showToast(`${charData.name} answered the summon!`)
     }
   }
 
@@ -150,7 +146,7 @@
       <div class="stat-chip">
         <span class="chip-icon">📊</span>
         <span class="chip-label">Total Earned</span>
-        <span class="chip-value">{Tavern.totalGoldEarned}g</span>
+        <span class="chip-value">{Game.state.tavern.totalGoldEarned}g</span>
       </div>
     </div>
   </div>
@@ -160,15 +156,15 @@
     <button class="tavern-tab" class:active={activeTab === 'recruits'} onclick={() => activeTab = 'recruits'}>
       <span class="tab-icon">🚪</span>
       Walk-ins
-      {#if Tavern.pendingRecruits.length > 0}
-        <span class="tab-badge">{Tavern.pendingRecruits.length}</span>
+      {#if pendingRecruits.length > 0}
+        <span class="tab-badge">{pendingRecruits.length}</span>
       {/if}
     </button>
     <button class="tavern-tab" class:active={activeTab === 'summon'} onclick={() => activeTab = 'summon'}>
       <span class="tab-icon">🔮</span>
       Summon
-      {#if Tavern.totalStones > 0}
-        <span class="tab-badge">{Tavern.totalStones}</span>
+      {#if totalStones > 0}
+        <span class="tab-badge">{totalStones}</span>
       {/if}
     </button>
     <button class="tavern-tab" class:active={activeTab === 'income'} onclick={() => activeTab = 'income'}>
@@ -190,20 +186,20 @@
           </div>
         </div>
         <div class="timer-right">
-          <div class="timer-detail">Wave size: {Tavern.calcPatrons(renown) > 0 ? `${1 + Math.floor(renown / 200)} adventurer${(1 + Math.floor(renown / 200)) > 1 ? 's' : ''}` : '—'}</div>
-          <div class="timer-detail">Interval: {formatTime(Tavern.passiveRecruitIntervalMs)}</div>
+          <div class="timer-detail">Wave size: {calcPatrons(renown) > 0 ? `${1 + Math.floor(renown / 200)} adventurer${(1 + Math.floor(renown / 200)) > 1 ? 's' : ''}` : '—'}</div>
+          <div class="timer-detail">Interval: {formatTime(Game.state.tavern.passiveRecruitIntervalMs)}</div>
         </div>
       </div>
 
       <!-- Pending recruits -->
-      {#if Tavern.pendingRecruits.length === 0}
+      {#if pendingRecruits.length === 0}
         <div class="empty-state">
           <span class="empty-icon">🪑</span>
           <p>The tavern is quiet. No adventurers waiting to join.</p>
         </div>
       {:else}
         <div class="recruits-grid">
-          {#each Tavern.pendingRecruits as recruit (recruit.id)}
+          {#each pendingRecruits as recruit (recruit.id)}
             <div class="recruit-card glass-panel" style="--rarity-color: {RARITY_CONFIG[recruit.rarity].color}">
               <div class="recruit-rarity-bar"></div>
               <div class="recruit-header">
@@ -237,7 +233,7 @@
                 <button class="btn-ghost small" onclick={() => handleDismiss(recruit)}>Dismiss</button>
                 <button
                   class="btn-primary small"
-                  disabled={Game.state.adventurers.length >= Game.state.maxAdventurers}
+                  disabled={Game.state.roster.length >= Game.state.settings.maxAdventurers}
                   onclick={() => handleAccept(recruit)}
                 >
                   Accept
@@ -261,7 +257,7 @@
       <div class="stones-grid">
         {#each STONE_GRADES as grade}
           {@const cfg = STONE_GRADE_CONFIG[grade]}
-          {@const stone = Tavern.summoningStones[grade]}
+          {@const stone = summoningStones[grade]}
           <div class="stone-card glass-panel" class:empty={stone.quantity <= 0}>
             <div class="stone-icon" style="color: {cfg.color}">{cfg.icon}</div>
             <div class="stone-info">
@@ -275,7 +271,7 @@
               <div class="stone-count">{stone.quantity} remaining</div>
               <button
                 class="btn-primary small"
-                disabled={stone.quantity <= 0 || Game.state.adventurers.length >= Game.state.maxAdventurers}
+                disabled={stone.quantity <= 0 || Game.state.roster.length >= Game.state.settings.maxAdventurers}
                 onclick={() => handleSummon(grade)}
               >
                 Summon
@@ -296,19 +292,19 @@
   {#if activeTab === 'income'}
     <div class="tab-content">
       <div class="ledger-summary glass-panel">
-        <div class="ledger-stat"><span>Total Gold Earned</span><strong>{Tavern.totalGoldEarned}g</strong></div>
-        <div class="ledger-stat"><span>Total Patrons Served</span><strong>{Tavern.totalPatronsServed}</strong></div>
+        <div class="ledger-stat"><span>Total Gold Earned</span><strong>{Game.state.tavern.totalGoldEarned}g</strong></div>
+        <div class="ledger-stat"><span>Total Patrons Served</span><strong>{Game.state.tavern.totalPatronsServed}</strong></div>
         <div class="ledger-stat"><span>Current Rate</span><strong>{goldPerTick}g / min</strong></div>
       </div>
 
       <div class="tavern-log">
-        {#if Tavern.log.length === 0}
+        {#if Game.state.world.log.length === 0}
           <div class="empty-state">
             <span class="empty-icon">📜</span>
             <p>The ledger is empty.</p>
           </div>
         {:else}
-          {#each Tavern.log as entry (entry.timestamp)}
+          {#each Game.state.world.log as entry (entry.timestamp)}
             <div class="log-entry log-{entry.type}">
               <span class="log-icon">{entry.icon}</span>
               <span class="log-message">{entry.message}</span>

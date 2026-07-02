@@ -16,7 +16,7 @@
   let fx = $state(parseInt(localStorage.getItem('tlg_volume_fx') || '70'))
   let crashLog = $state(localStorage.getItem('tlg_crash_log') === '1')
   let debugConsole = $state(localStorage.getItem('tlg_debug_console') === '1')
-  let devMode = $state(Game.state.devMode)
+  let devMode = $state(Game.state.settings.devMode)
   let windowMode = $state(localStorage.getItem('tlg_window_mode') || 'fullscreen')
   let resolution = $state(localStorage.getItem('tlg_resolution') || '1920x1080')
   let autoSaveInterval = $state(localStorage.getItem('tlg_autosave_interval') || '30')
@@ -46,11 +46,12 @@
     localStorage.setItem('tlg_autosave_interval', autoSaveInterval)
     localStorage.setItem('tlg_dev_mode', devMode ? '1' : '0')
 
-    // Sync with Game state
-    Game.state.debugConsole = debugConsole
-    Game.state.devMode = devMode
-    Game.state.autoSaveInterval = parseInt(autoSaveInterval)
-    Game.startAutoSaveTimer()
+    // Sync with Game state via store action
+    Game.updateSettings({
+      debugConsole,
+      devMode,
+      autoSaveInterval: parseInt(autoSaveInterval)
+    })
     Game.save()
 
     // Apply Window Settings via Electron
@@ -71,7 +72,7 @@
   }
 </script>
 
-<!-- Your exact #settings-modal HTML from index.html -->
+
 <div id="settings-modal" class="overlay visible" aria-modal="true" role="dialog" aria-labelledby="settings-title">
     <!-- svelte-ignore a11y_click_events_have_key_events -->
     <!-- svelte-ignore a11y_no_static_element_interactions -->

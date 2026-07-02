@@ -63,7 +63,7 @@
   }
 </script>
 
-<!-- Your exact #tos-overlay HTML from index.html -->
+
 <div id="tos-overlay" class="overlay visible" aria-modal="true" role="dialog" aria-labelledby="tos-title">
     <div class="modal-backdrop"></div>
     <div class="tos-modal glass-panel">

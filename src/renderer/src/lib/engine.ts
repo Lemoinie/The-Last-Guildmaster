@@ -21,29 +21,18 @@ class Engine {
   }
 
   tick() {
-    const state = Game.state
-    // Process Expeditions
-    state.expeditions.forEach((exp) => {
-      if (exp.status === 'active') {
-        exp.remainingTime -= 1
-        if (exp.remainingTime <= 0) {
-          this.finishExpedition(exp)
-        }
-      }
-    })
+    // 1. Advance unified world time clock
+    Game.advanceTick()
 
-    // Process Garden (simulated growth)
+    // 2. Process Expeditions via Game store action
+    Game.resolveExpedition()
+
+    // 3. Process Garden (simulated growth)
     // TODO: Garden logic
   }
 
-  finishExpedition(expedition: { status: string }) {
-    expedition.status = 'completed'
-  }
-
   log(message: string) {
-    const state = Game.state
-    state.logs.push(`[${new Date().toLocaleTimeString()}] ${message}`)
-    if (state.logs.length > 50) state.logs.shift()
+    Game.addLog('⚙', message, 'info')
   }
 }
 

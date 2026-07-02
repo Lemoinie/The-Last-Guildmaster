@@ -23,3 +23,6 @@ Thumbs.db
 *.air
 *.ipa
 *.apk
+
+# Legacy/Deleted directories
+backup/

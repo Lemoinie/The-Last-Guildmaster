@@ -15,8 +15,7 @@
   let toastMessage = $state('')
   let toastVisible = $state(false)
 
-  // Dev mode — reactive, driven by Game.state so any settings modal updates it instantly
-  const devMode = $derived(Game.state.devMode)
+  const devMode = $derived(Game.state.settings.devMode)
 
   function showToast(message: string) {
     toastMessage = message

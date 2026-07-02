@@ -7,7 +7,6 @@
    * Only renders when devMode is enabled in Settings.
    */
   import { Game } from '../lib/stores/game.svelte'
-  import { Tavern } from '../lib/game/tavern.svelte'
   import { Character } from '../lib/adventurer/character.svelte'
   import { JOBS } from '../lib/adventurer/jobs'
   import { TRAITS } from '../lib/adventurer/traits'
@@ -67,29 +66,32 @@
     for (let i = 1; i < recruitLevel; i++) {
       char.addXp(50 * Math.pow(i, 1.8))
     }
-    // Push directly to pending recruits via Tavern
-    Tavern['pendingRecruits'] // access via the returned getter — use the public addStones workaround
-    // We inject directly via Game state for simplicity
-    Game.state.adventurers.push({
-      name: char.name,
-      class: char.jobId,
-      level: char.level,
-      id: Date.now()
-    })
-    showToast(`Dev: ${char.name} (Lv.${char.level} ${JOBS[recruitJobId]?.name ?? recruitJobId}) added to roster.`)
+    // Push directly to roster via Game store action
+    const charData = char.serialize()
+    const success = Game.addCharacter(charData)
+    if (success) {
+      showToast(`Dev: ${char.name} (Lv.${char.level} ${JOBS[recruitJobId]?.name ?? recruitJobId}) added to roster.`)
+    } else {
+      showToast('Dev Action Failed: Roster is full.')
+    }
   }
 
   // ─── Edit Reputation ─────────────────────────────────────────────────────────
-  let reputationValue = $state(Game.state.renown)
+  let reputationValue = $state(Game.state.economy.renown)
 
   function applyReputation() {
     const val = Math.max(0, Math.floor(reputationValue))
-    Game.state.renown = val
+    const current = Game.state.economy.renown
+    if (val > current) {
+      Game.gainRenown(val - current)
+    } else if (val < current) {
+      Game.loseRenown(current - val)
+    }
     showToast(`Dev: Reputation set to ${val}.`)
   }
 
   // ─── Add Item ────────────────────────────────────────────────────────────────
-  type StorageKey = keyof typeof Game.state.inventory
+  type StorageKey = keyof typeof Game.state.resources
   const STORAGE_ITEMS: { key: StorageKey; label: string; icon: string }[] = [
     { key: 'wood',  label: 'Timber',    icon: '🪵' },
     { key: 'stone', label: 'Stone',     icon: '🪨' },
@@ -102,7 +104,7 @@
 
   function addItem() {
     const qty = Math.max(1, Math.floor(addItemQty))
-    Game.state.inventory[addItemKey] += qty
+    Game.addResource(addItemKey, qty)
     const meta = STORAGE_ITEMS.find(i => i.key === addItemKey)!
     showToast(`Dev: Added ${qty}x ${meta.icon} ${meta.label}.`)
   }
@@ -169,7 +171,7 @@
         <label class="dev-label" for="dev-rep">Renown</label>
         <input id="dev-rep" type="number" min="0" max="99999" class="dev-input" bind:value={reputationValue} />
       </div>
-      <div class="dev-current">Current: {Game.state.renown}</div>
+      <div class="dev-current">Current: {Game.state.economy.renown}</div>
       <button class="dev-btn dev-btn-action" onclick={applyReputation}>Apply</button>
     </section>
 

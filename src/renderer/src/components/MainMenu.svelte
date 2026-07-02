@@ -86,7 +86,7 @@
   }
 </script>
 
-<!-- Your exact #main-menu HTML from index.html -->
+
 <div id="main-menu" class="overlay visible" aria-label="Main Menu">
     <div class="menu-bg-particles" id="particles-canvas"></div>
     <div class="menu-overlay-gradient"></div>
