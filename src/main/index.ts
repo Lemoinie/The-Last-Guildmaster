@@ -36,6 +36,50 @@ if (!gotTheLock) {
 autoUpdater.autoDownload = false
 
 let win: BrowserWindow | null = null
+let debugConsoleWin: BrowserWindow | null = null
+
+function openDebugConsoleWindow() {
+  if (debugConsoleWin && !debugConsoleWin.isDestroyed()) {
+    debugConsoleWin.focus()
+    return
+  }
+
+  debugConsoleWin = new BrowserWindow({
+    width: 850,
+    height: 600,
+    minWidth: 600,
+    minHeight: 400,
+    backgroundColor: '#030508',
+    title: 'Guild Chronicler — Debug Console',
+    autoHideMenuBar: true,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+      sandbox: false,
+      preload: path.join(__dirname, '../preload/index.js')
+    }
+  })
+
+  // Load console view
+  if (!app.isPackaged && process.env['ELECTRON_RENDERER_URL']) {
+    debugConsoleWin.loadURL(`${process.env['ELECTRON_RENDERER_URL']}?console=true`)
+  } else {
+    debugConsoleWin.loadFile(path.join(__dirname, '../renderer/index.html'), {
+      hash: 'console'
+    })
+  }
+
+  debugConsoleWin.on('closed', () => {
+    debugConsoleWin = null
+  })
+}
+
+function closeDebugConsoleWindow() {
+  if (debugConsoleWin && !debugConsoleWin.isDestroyed()) {
+    debugConsoleWin.close()
+  }
+  debugConsoleWin = null
+}
 
 function createWindow() {
   // Initialize Paths only when app is ready
@@ -211,6 +255,9 @@ function createWindow() {
       }
       logs.push(entry)
       await fs.promises.writeFile(logFile, JSON.stringify(logs, null, 2), 'utf-8')
+      if (debugConsoleWin && !debugConsoleWin.isDestroyed()) {
+        debugConsoleWin.webContents.send('console:log', entry)
+      }
       return true
     } catch (err) {
       console.error('Failed to write log:', err)
@@ -218,29 +265,28 @@ function createWindow() {
     }
   })
 
-  ipcMain.handle('app:open-debug-console', async () => {
-    if (!logsPath) return false
+  ipcMain.handle('app:open-debug-console', () => {
+    openDebugConsoleWindow()
+    return true
+  })
+
+  ipcMain.handle('app:close-debug-console', () => {
+    closeDebugConsoleWindow()
+    return true
+  })
+
+  ipcMain.handle('console:get-history', async () => {
+    if (!logsPath) return []
     const logFile = path.join(logsPath, 'session.json')
-    const { spawn } = require('child_process')
-
-    if (!fs.existsSync(logFile)) {
-      try {
-        fs.writeFileSync(logFile, '[]', 'utf-8')
-      } catch {
-        return false
-      }
-    }
-
-    const psCommand = `Get-Content -Path "${logFile}" -Wait -Tail 20`
     try {
-      spawn('powershell.exe', ['-NoExit', '-Command', psCommand], {
-        detached: true,
-        stdio: 'ignore'
-      }).unref()
-      return true
-    } catch {
-      return false
+      if (fs.existsSync(logFile)) {
+        const data = await fs.promises.readFile(logFile, 'utf-8')
+        return JSON.parse(data)
+      }
+    } catch (err) {
+      console.error('Failed to read logs history:', err)
     }
+    return []
   })
 
   // --- Auto-Updater IPC ---

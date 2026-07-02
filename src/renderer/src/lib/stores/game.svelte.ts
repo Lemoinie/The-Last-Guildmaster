@@ -291,6 +291,10 @@ function createGame() {
     }
 
     startAutoSaveTimer()
+
+    if (state.settings.debugConsole) {
+      window.electronAPI?.openDebugConsole()
+    }
   }
 
   function reset() {
@@ -300,7 +304,14 @@ function createGame() {
 
   // ─── Settings Actions ────────────────────────────────────────────────────────
   function updateSettings(config: { debugConsole?: boolean; devMode?: boolean; autoSaveInterval?: number }) {
-    if (config.debugConsole !== undefined) state.settings.debugConsole = config.debugConsole
+    if (config.debugConsole !== undefined) {
+      state.settings.debugConsole = config.debugConsole
+      if (config.debugConsole) {
+        window.electronAPI?.openDebugConsole()
+      } else {
+        window.electronAPI?.closeDebugConsole()
+      }
+    }
     if (config.devMode !== undefined) state.settings.devMode = config.devMode
     if (config.autoSaveInterval !== undefined) state.settings.autoSaveInterval = config.autoSaveInterval
     startAutoSaveTimer()

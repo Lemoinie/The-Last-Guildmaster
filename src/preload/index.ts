@@ -11,6 +11,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
   writeLog: (type: string, message: string) =>
     ipcRenderer.invoke('app:write-log', { type, message }),
   openDebugConsole: () => ipcRenderer.invoke('app:open-debug-console'),
+  closeDebugConsole: () => ipcRenderer.invoke('app:close-debug-console'),
+  getLogsHistory: () => ipcRenderer.invoke('console:get-history'),
+  onConsoleLog: (callback: (log: any) => void) =>
+    ipcRenderer.on('console:log', (_event, log) => callback(log)),
 
   // Auto-Updater
   checkForUpdates: () => ipcRenderer.invoke('app:check-for-updates'),

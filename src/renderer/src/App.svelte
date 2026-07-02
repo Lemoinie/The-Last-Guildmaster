@@ -6,7 +6,10 @@
   import GameApp from './components/GameApp.svelte'
   import Toast from './components/Toast.svelte'
   import DevBubble from './components/DevBubble.svelte'
+  import DebugConsoleView from './components/DebugConsoleView.svelte'
   import { Game } from './lib/stores/game.svelte'
+
+  const isConsoleWindow = window.location.search.includes('console=true') || window.location.hash.includes('console')
 
   let currentScreen = $state<'menu' | 'game'>('menu')
   let showLegal = $state(false)
@@ -37,45 +40,49 @@
   }
 </script>
 
-<!-- Screens (base layer) -->
-{#if currentScreen === 'menu'}
-  <MainMenu
-    onplay={handlePlay}
-    onsettings={() => showSettings = true}
-    oncredits={() => showCredits = true}
-    onlegal={() => showLegal = true}
-  />
-{/if}
+{#if isConsoleWindow}
+  <DebugConsoleView />
+{:else}
+  <!-- Screens (base layer) -->
+  {#if currentScreen === 'menu'}
+    <MainMenu
+      onplay={handlePlay}
+      onsettings={() => showSettings = true}
+      oncredits={() => showCredits = true}
+      onlegal={() => showLegal = true}
+    />
+  {/if}
 
-{#if currentScreen === 'game'}
-  <GameApp onbacktomenu={handleBackToMenu} {showToast} />
-{/if}
+  {#if currentScreen === 'game'}
+    <GameApp onbacktomenu={handleBackToMenu} {showToast} />
+  {/if}
 
-<!-- Modals (on top of screens) -->
-{#if showSettings}
-  <SettingsModal
-    onclose={() => showSettings = false}
-    {showToast}
-  />
-{/if}
+  <!-- Modals (on top of screens) -->
+  {#if showSettings}
+    <SettingsModal
+      onclose={() => showSettings = false}
+      {showToast}
+    />
+  {/if}
 
-{#if showCredits}
-  <CreditsModal onclose={() => showCredits = false} />
-{/if}
+  {#if showCredits}
+    <CreditsModal onclose={() => showCredits = false} />
+  {/if}
 
-{#if showLegal}
-  <LegalOverlay
-    onclose={() => showLegal = false}
-    onaccept={() => showLegal = false}
-    {showToast}
-  />
-{/if}
+  {#if showLegal}
+    <LegalOverlay
+      onclose={() => showLegal = false}
+      onaccept={() => showLegal = false}
+      {showToast}
+    />
+  {/if}
 
-<!-- Dev Bubble — only shown during game, only when Dev Mode is active -->
-{#if devMode && currentScreen === 'game'}
-  <DevBubble {showToast} />
-{/if}
+  <!-- Dev Bubble — only shown during game, only when Dev Mode is active -->
+  {#if devMode && currentScreen === 'game'}
+    <DevBubble {showToast} />
+  {/if}
 
-{#if toastVisible}
-  <Toast message={toastMessage} />
+  {#if toastVisible}
+    <Toast message={toastMessage} />
+  {/if}
 {/if}
