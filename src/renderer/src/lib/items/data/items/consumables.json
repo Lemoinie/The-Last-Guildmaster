@@ -1,0 +1,41 @@
+[
+  {
+    "id": "health_potion",
+    "name": "Minor Health Potion",
+    "category": "consumable",
+    "family": "potion",
+    "rarity": "common",
+    "stackable": true,
+    "maxStack": 10,
+    "baseValue": 15,
+    "tags": ["usable", "healing"],
+    "weight": 0.3,
+    "professionSource": "alchemy"
+  },
+  {
+    "id": "mana_potion",
+    "name": "Minor Mana Potion",
+    "category": "consumable",
+    "family": "potion",
+    "rarity": "common",
+    "stackable": true,
+    "maxStack": 10,
+    "baseValue": 15,
+    "tags": ["usable", "mana"],
+    "weight": 0.3,
+    "professionSource": "alchemy"
+  },
+  {
+    "id": "elixir",
+    "name": "Restorative Elixir",
+    "category": "consumable",
+    "family": "potion",
+    "rarity": "rare",
+    "stackable": true,
+    "maxStack": 5,
+    "baseValue": 50,
+    "tags": ["usable", "healing", "mana"],
+    "weight": 0.4,
+    "professionSource": "alchemy"
+  }
+]

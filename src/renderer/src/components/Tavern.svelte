@@ -47,28 +47,25 @@
   )
 
   const currentAbsoluteHours = $derived(
-    Game.state.world.time.hour + (Game.state.world.time.day - 1) * 24 + (Game.state.world.time.month - 1) * 28 * 24
+    (Game.state.world.time.hour || 0) +
+      ((Game.state.world.time.day || 1) - 1) * 24 +
+      ((Game.state.world.time.month || 1) - 1) * 28 * 24 +
+      ((Game.state.world.time.year || 1) - 1) * 336 * 24
   )
   const intervalHours = $derived(
-    Math.floor(Game.state.tavern.passiveRecruitIntervalMs / 60_000)
+    Math.floor((Game.state.tavern.passiveRecruitIntervalMs || 0) / 3600000)
   )
 
   function updateCountdown() {
-    const targetHour = Game.state.tavern.lastPassiveRecruitAt + intervalHours
-    const remainingHours = targetHour - currentAbsoluteHours
-    if (remainingHours <= 0) {
+    const targetHour = (Game.state.tavern.lastPassiveRecruitAt ?? -12) + intervalHours
+    const remainingTicks = (targetHour - currentAbsoluteHours) * 60 - (Game.state.world.time.tick || 0)
+    if (isNaN(remainingTicks) || remainingTicks <= 0) {
       nextRecruitIn = 'Adventurers are at the door!'
       return
     }
-    const remainingSeconds = remainingHours * 60 - Game.state.world.time.tick
-    if (remainingSeconds <= 0) {
-      nextRecruitIn = 'Adventurers are at the door!'
-      return
-    }
-    const h = Math.floor(remainingSeconds / 3600)
-    const m = Math.floor((remainingSeconds % 3600) / 60)
-    const s = remainingSeconds % 60
-    nextRecruitIn = `${h}h ${m}m ${s}s`
+    const h = Math.floor(remainingTicks / 60)
+    const m = remainingTicks % 60
+    nextRecruitIn = `${h}h ${m}m`
   }
 
   onMount(() => {

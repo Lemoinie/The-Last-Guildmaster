@@ -1,0 +1,62 @@
+[
+  {
+    "id": "poppy",
+    "name": "Red Poppy",
+    "category": "herb",
+    "family": "flower",
+    "rarity": "common",
+    "stackable": true,
+    "maxStack": 99,
+    "baseValue": 5,
+    "tags": ["alchemy_ingredient", "rest_aid"],
+    "weight": 0.1,
+    "professionSource": "herbalism",
+    "biomeSource": "plains",
+    "seasonalAvailability": "spring"
+  },
+  {
+    "id": "marigold",
+    "name": "Golden Marigold",
+    "category": "herb",
+    "family": "flower",
+    "rarity": "common",
+    "stackable": true,
+    "maxStack": 99,
+    "baseValue": 6,
+    "tags": ["alchemy_ingredient", "healing_aid"],
+    "weight": 0.1,
+    "professionSource": "herbalism",
+    "biomeSource": "forest",
+    "seasonalAvailability": "summer"
+  },
+  {
+    "id": "wormwood",
+    "name": "Bitter Wormwood",
+    "category": "herb",
+    "family": "root",
+    "rarity": "uncommon",
+    "stackable": true,
+    "maxStack": 99,
+    "baseValue": 12,
+    "tags": ["alchemy_ingredient", "poison_base"],
+    "weight": 0.1,
+    "professionSource": "herbalism",
+    "biomeSource": "swamp",
+    "seasonalAvailability": "autumn"
+  },
+  {
+    "id": "sage",
+    "name": "Wild Sage",
+    "category": "herb",
+    "family": "leaf",
+    "rarity": "common",
+    "stackable": true,
+    "maxStack": 99,
+    "baseValue": 8,
+    "tags": ["alchemy_ingredient", "mana_aid"],
+    "weight": 0.1,
+    "professionSource": "herbalism",
+    "biomeSource": "hills",
+    "seasonalAvailability": "spring"
+  }
+]

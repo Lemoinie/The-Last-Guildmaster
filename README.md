@@ -6,6 +6,23 @@ Built as a standalone desktop application using **Electron**, **Svelte 5**, **Ty
 
 ---
 
+## 📚 Specifications & Systems Wiki
+
+- **[Software Requirements Specification (SRS)](./SRS.md)** — Core functional behavior specs, system constraints, invariants, event logic, and progression rules.
+- **[Game Design Document (GDD)](./docs/GDD.md)** — Layered dependency overview detailing atomic, stateful, and macro loops.
+- **[State Flow Diagram (STATEFLOW)](./STATEFLOW.md)** — Visual representations of reactive rendering, boot initialization, clocks, save pipelines, and expeditions.
+- **[Game Systems Wiki](./wiki/)**:
+  - **[Core Process Architecture](./wiki/core_architecture.md)** — Dual-process data flow.
+  - **[Time & Catch-up System](./wiki/time_system.md)** — Heartbeats, rollovers, and offline ticking.
+  - **[Hero & Roster System](./wiki/hero_system.md)** — Base attributes, derived equations, levels, traits, and gear.
+  - **[Tavern & Income System](./wiki/tavern_system.md)** — Logarithmic patron counts, income equations, and summoning pools.
+  - **[JSON Item Registry Schema](./wiki/item_registry.json_schema.md)** — Moddable item databases.
+  - **[Guild Storage System](./wiki/guild_storage.md)** — Slot allocation, split, and merge operations.
+  - **[Save Migrations](./wiki/save_migration.md)** — Dual-persistence pipelines.
+  - **[Application Update Log](./wiki/changelog.md)** — Version log history.
+
+---
+
 ## 🚀 Getting Started
 
 ### Installation
@@ -15,16 +32,16 @@ Once the project is built, you can install the game using the generated setup fi
     *   (Typically: `C:\Users\<YourUsername>\AppData\Local\Programs\the-last-guildmaster`)
 
 ### Running the App
-After installation, you can launch the game via the desktop shortcut or by running `the-last-guildmaster.exe` in the installation folder.
+After installation, you can launch the game via the shortcut or by running `the-last-guildmaster.exe` in the installation folder.
 
 ---
 
 ## 💾 Save Data & Persistence
 
-Your progress is automatically saved locally on your machine. We use `localStorage` to ensure your guild's data remains persistent even after app updates.
+Your progress is automatically saved locally on your machine. We use both native Electron file system saving and browser `localStorage` as a fallback.
 
-*   **Save File Location**: `%APPDATA%\the-last-guildmaster\saves`
-    *   (Typically: `C:\Users\<YourUsername>\AppData\Roaming\the-last-guildmaster\saves`)
+*   **Save File Location**: `%APPDATA%\the-last-guildmaster\saves\savegame.json`
+    *   (Typically: `C:\Users\<YourUsername>\AppData\Roaming\the-last-guildmaster\saves\savegame.json`)
 *   **Data Integrity**: Do not modify or delete the files in this directory unless you wish to reset your game progress entirely.
 
 ---
@@ -57,9 +74,13 @@ If you are developing or modifying the game:
     ```bash
     npm run build
     ```
-*   **Package Installer**: Generates a production-ready Windows installer (`.exe`) in the `dist/` folder.
+*   **Compile Directory**: Packs the Electron app binaries into an unpacked folder (`dist/win-unpacked`).
     ```bash
     npm run postbuild
+    ```
+*   **Package Inno Setup Installer**: Runs the automated compiler script to generate a customized installer (`The-Last-Guildmaster-Setup.exe`) and `latest.yml` update descriptor (requires Inno Setup 6).
+    ```bash
+    npm run package
     ```
 
 ### Tech Stack
@@ -69,6 +90,7 @@ If you are developing or modifying the game:
 | **UI** | Svelte 5 (Runes) |
 | **Language** | TypeScript |
 | **Build Tool** | electron-vite (Vite 6) |
+| **Installer** | Inno Setup 6 (Install, Repair, Uninstall) |
 | **Packaging** | electron-builder |
 | **Auto-Update** | electron-updater |
 

@@ -1,0 +1,78 @@
+[
+  {
+    "id": "stone",
+    "name": "Rough Stone",
+    "category": "utility",
+    "family": "stone",
+    "rarity": "common",
+    "stackable": true,
+    "maxStack": 99,
+    "baseValue": 4,
+    "tags": ["building_material", "construction"],
+    "weight": 4.0,
+    "professionSource": "mining",
+    "biomeSource": "quarry"
+  },
+  {
+    "id": "crystal",
+    "name": "Mana Crystal",
+    "category": "utility",
+    "family": "crystal",
+    "rarity": "rare",
+    "stackable": true,
+    "maxStack": 99,
+    "baseValue": 80,
+    "tags": ["magic_crafting", "enchanting"],
+    "weight": 0.5,
+    "professionSource": "mining",
+    "biomeSource": "deep_caves"
+  },
+  {
+    "id": "crude",
+    "name": "Crude Summoning Stone",
+    "category": "utility",
+    "family": "summoning_stone",
+    "rarity": "common",
+    "stackable": true,
+    "maxStack": 99,
+    "baseValue": 100,
+    "tags": ["summon", "tavern_utility"],
+    "weight": 0.2
+  },
+  {
+    "id": "refined",
+    "name": "Refined Summoning Stone",
+    "category": "utility",
+    "family": "summoning_stone",
+    "rarity": "uncommon",
+    "stackable": true,
+    "maxStack": 99,
+    "baseValue": 300,
+    "tags": ["summon", "tavern_utility"],
+    "weight": 0.2
+  },
+  {
+    "id": "arcane",
+    "name": "Arcane Summoning Stone",
+    "category": "utility",
+    "family": "summoning_stone",
+    "rarity": "rare",
+    "stackable": true,
+    "maxStack": 99,
+    "baseValue": 1000,
+    "tags": ["summon", "tavern_utility"],
+    "weight": 0.2
+  },
+  {
+    "id": "legendary",
+    "name": "Legendary Summoning Stone",
+    "category": "utility",
+    "family": "summoning_stone",
+    "rarity": "legendary",
+    "stackable": true,
+    "maxStack": 99,
+    "baseValue": 5000,
+    "tags": ["summon", "tavern_utility"],
+    "weight": 0.2
+  }
+]

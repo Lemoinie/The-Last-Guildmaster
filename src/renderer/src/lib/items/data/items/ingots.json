@@ -1,0 +1,41 @@
+[
+  {
+    "id": "copper_ingot",
+    "name": "Copper Ingot",
+    "category": "ingot",
+    "family": "metal_ingot",
+    "rarity": "common",
+    "stackable": true,
+    "maxStack": 99,
+    "baseValue": 30,
+    "tags": ["forging_material", "blacksmithing"],
+    "weight": 2.0,
+    "professionSource": "smelting"
+  },
+  {
+    "id": "iron_ingot",
+    "name": "Iron Ingot",
+    "category": "ingot",
+    "family": "metal_ingot",
+    "rarity": "common",
+    "stackable": true,
+    "maxStack": 99,
+    "baseValue": 45,
+    "tags": ["forging_material", "blacksmithing"],
+    "weight": 2.5,
+    "professionSource": "smelting"
+  },
+  {
+    "id": "silver_ingot",
+    "name": "Silver Ingot",
+    "category": "ingot",
+    "family": "metal_ingot",
+    "rarity": "uncommon",
+    "stackable": true,
+    "maxStack": 99,
+    "baseValue": 100,
+    "tags": ["forging_material", "blacksmithing", "precious"],
+    "weight": 2.8,
+    "professionSource": "smelting"
+  }
+]

@@ -1,0 +1,44 @@
+[
+  {
+    "id": "copper_ore",
+    "name": "Raw Copper Ore",
+    "category": "ore",
+    "family": "metal_ore",
+    "rarity": "common",
+    "stackable": true,
+    "maxStack": 99,
+    "baseValue": 12,
+    "tags": ["raw_metal", "smelting"],
+    "weight": 2.5,
+    "professionSource": "mining",
+    "biomeSource": "mountains"
+  },
+  {
+    "id": "iron_ore",
+    "name": "Raw Iron Ore",
+    "category": "ore",
+    "family": "metal_ore",
+    "rarity": "common",
+    "stackable": true,
+    "maxStack": 99,
+    "baseValue": 15,
+    "tags": ["raw_metal", "smelting"],
+    "weight": 3.0,
+    "professionSource": "mining",
+    "biomeSource": "mountains"
+  },
+  {
+    "id": "silver_ore",
+    "name": "Raw Silver Ore",
+    "category": "ore",
+    "family": "metal_ore",
+    "rarity": "uncommon",
+    "stackable": true,
+    "maxStack": 99,
+    "baseValue": 40,
+    "tags": ["raw_metal", "smelting", "precious"],
+    "weight": 3.5,
+    "professionSource": "mining",
+    "biomeSource": "mountains"
+  }
+]

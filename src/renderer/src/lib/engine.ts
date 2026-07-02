@@ -4,12 +4,16 @@
 import { Game } from './stores/game.svelte'
 
 class Engine {
-  tickRate = 1000
   intervalId: ReturnType<typeof setInterval> | null = null
+  lastTimestamp = 0
+  accumulator = 0
 
   start() {
     if (this.intervalId) return
-    this.intervalId = setInterval(() => this.tick(), this.tickRate)
+    this.lastTimestamp = performance.now()
+    this.accumulator = 0
+    // Check elapsed delta frequently to ensure tick accuracy and lag recovery
+    this.intervalId = setInterval(() => this.loopStep(), 100)
     console.log('Engine started.')
   }
 
@@ -20,15 +24,21 @@ class Engine {
     }
   }
 
+  loopStep() {
+    const now = performance.now()
+    const delta = now - this.lastTimestamp
+    this.lastTimestamp = now
+
+    this.accumulator += delta
+    while (this.accumulator >= 1000) {
+      this.tick()
+      this.accumulator -= 1000
+    }
+  }
+
   tick() {
-    // 1. Advance unified world time clock
+    // 1. Advance unified world time clock (triggers timeHooks.onTick hooks including expeditions)
     Game.advanceTick()
-
-    // 2. Process Expeditions via Game store action
-    Game.resolveExpedition()
-
-    // 3. Process Garden (simulated growth)
-    // TODO: Garden logic
   }
 
   log(message: string) {

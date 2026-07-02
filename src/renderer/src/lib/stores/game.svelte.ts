@@ -7,7 +7,7 @@
 
 import type { CharacterData } from '../adventurer/types'
 import type { StoneGrade, ItemRarity } from '../adventurer/items.svelte'
-
+import { Character } from '../adventurer/character.svelte'
 // System Delegations
 import * as economySys from '../systems/economy.system'
 import * as resourceSys from '../systems/resource.system'
@@ -15,11 +15,14 @@ import * as rosterSys from '../systems/roster.system'
 import * as worldSys from '../systems/world.system'
 import * as expeditionSys from '../systems/expedition.system'
 import * as tavernSys from '../systems/tavern.system'
-import * as timeSys from '../systems/time.system'
+import * as timeSys from '../systems/world.time.system'
+import * as storageSys from '../systems/storage.system'
+import { registerTimeHooks } from '../systems/time.actions'
+import { migrateSave } from '../persistence/migrations'
 
 // Re-export scaling functions for components
 export { calcPatrons, calcRecruitInterval, calcRecruitWaveSize, calcPassiveRarityPool } from '../systems/tavern.system'
-export { getSeason } from '../systems/time.system'
+export { getSeason, isNight } from '../systems/world.time.system'
 
 export interface Expedition {
   id: number
@@ -50,6 +53,7 @@ export interface Resources {
   herbs: number
   seeds: number
   iron: number
+  storage: storageSys.GuildStorageData
 }
 
 export interface GameStateData {
@@ -78,7 +82,7 @@ export interface GameStateData {
       day: number
       week: number
       month: number
-      season: 'spring' | 'summer' | 'autumn' | 'winter'
+      year: number
     }
   }
   settings: {
@@ -124,7 +128,11 @@ const initialState: GameStateData = {
     stone: 10,
     herbs: 5,
     seeds: 0,
-    iron: 2
+    iron: 2,
+    storage: {
+      maxSlots: 20,
+      items: Array(20).fill(null)
+    }
   },
   expeditions: [],
   world: {
@@ -143,7 +151,7 @@ const initialState: GameStateData = {
       day: 1,
       week: 1,
       month: 1,
-      season: 'spring'
+      year: 1
     }
   },
   settings: {
@@ -163,6 +171,9 @@ const initialState: GameStateData = {
 function createGame() {
   let state = $state<GameStateData>(JSON.parse(JSON.stringify(initialState)))
   let autoSaveTimer: ReturnType<typeof setInterval> | null = null
+
+  // Register time progression hooks for subsystems
+  registerTimeHooks()
 
   // ─── Auto-Save ──────────────────────────────────────────────────────────────
   function startAutoSaveTimer() {
@@ -188,17 +199,84 @@ function createGame() {
   }
 
   async function load() {
+    let rawSaved: any = null
+
     if (window.electronAPI?.loadGame) {
-      const saved = await window.electronAPI.loadGame()
-      if (saved) {
-        Object.assign(state, { ...JSON.parse(JSON.stringify(initialState)), ...saved })
+      rawSaved = await window.electronAPI.loadGame()
+      if (rawSaved) {
         console.log('State loaded from file system')
       }
     } else {
       const saved = localStorage.getItem(STORAGE_KEY)
       if (saved) {
-        Object.assign(state, { ...JSON.parse(JSON.stringify(initialState)), ...JSON.parse(saved) })
+        rawSaved = JSON.parse(saved)
       }
+    }
+
+    if (rawSaved) {
+      // 1. Run root schema migrations
+      const migrated = migrateSave(rawSaved)
+      // 2. Hydrate state
+      Object.assign(state, { ...JSON.parse(JSON.stringify(initialState)), ...migrated })
+    }
+
+    // Ensure storage is initialized fallback if missing
+    if (!state.resources.storage) {
+      state.resources.storage = {
+        maxSlots: 20,
+        items: Array(20).fill(null)
+      }
+    }
+
+    // Ensure all time parameters are initialized to prevent NaNs
+    if (!state.world.time) {
+      state.world.time = { tick: 0, hour: 0, day: 1, week: 1, month: 1, year: 1 }
+    } else {
+      if (state.world.time.tick === undefined) state.world.time.tick = 0
+      if (state.world.time.hour === undefined) state.world.time.hour = 0
+      if (state.world.time.day === undefined) state.world.time.day = 1
+      if (state.world.time.week === undefined) state.world.time.week = 1
+      if (state.world.time.month === undefined) state.world.time.month = 1
+      if (state.world.time.year === undefined) state.world.time.year = 1
+    }
+
+    // Sanitize tavern timestamps
+    if (state.tavern) {
+      if (state.tavern.lastPassiveRecruitAt === undefined || state.tavern.lastPassiveRecruitAt > 1000000) {
+        state.tavern.lastPassiveRecruitAt = -12
+      }
+      if (state.tavern.lastIncomeTick === undefined || state.tavern.lastIncomeTick > 1000000) {
+        state.tavern.lastIncomeTick = 0
+      }
+    }
+
+    // Validate and migrate CharacterData in roster
+    if (Array.isArray(state.roster)) {
+      state.roster = state.roster.map(charData => {
+        try {
+          const char = Character.deserialize(charData)
+          return char.serialize()
+        } catch (e) {
+          console.error('Failed to deserialize/migrate character data, keeping original:', e)
+          return charData
+        }
+      })
+    }
+
+    // Validate and migrate CharacterData in pending recruits
+    if (state.tavern && Array.isArray(state.tavern.pendingRecruits)) {
+      state.tavern.pendingRecruits = state.tavern.pendingRecruits.map(recruit => {
+        try {
+          const char = Character.deserialize(recruit.character)
+          return {
+            ...recruit,
+            character: char.serialize()
+          }
+        } catch (e) {
+          console.error('Failed to deserialize/migrate pending recruit character data:', e)
+          return recruit
+        }
+      })
     }
 
     // Offline Time Catch-up
@@ -247,6 +325,13 @@ function createGame() {
     addResource: (type: keyof Resources, amount: number) => resourceSys.addResource(state, type, amount),
     consumeResource: (type: keyof Resources, amount: number) => resourceSys.consumeResource(state, type, amount),
 
+    // Storage Actions Delegation
+    addItem: (itemId: string, quantity: number) => storageSys.addItem(state.resources.storage, itemId, quantity),
+    removeItem: (itemId: string, quantity: number) => storageSys.removeItem(state.resources.storage, itemId, quantity),
+    splitStack: (slotIndex: number, amount: number) => storageSys.splitStack(state.resources.storage, slotIndex, amount),
+    mergeStacks: () => storageSys.mergeStacks(state.resources.storage),
+    hasSpace: (itemId: string, quantity: number) => storageSys.hasSpace(state.resources.storage, itemId, quantity),
+
     // Roster Actions Delegation
     addCharacter: (characterData: CharacterData) => rosterSys.addCharacter(state, characterData),
     removeCharacter: (characterId: string) => rosterSys.removeCharacter(state, characterId),
@@ -281,8 +366,8 @@ function createGame() {
     advanceTick: () => timeSys.advanceTick(state),
     advanceHour: () => timeSys.advanceHour(state),
     advanceDay: () => timeSys.advanceDay(state),
-    advanceWeek: () => timeSys.advanceWeek(state),
-    advanceMonth: () => timeSys.advanceMonth(state)
+    advanceMonth: () => timeSys.advanceMonth(state),
+    advanceYear: () => timeSys.advanceYear(state)
   }
 }
 

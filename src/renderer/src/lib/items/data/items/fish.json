@@ -1,0 +1,44 @@
+[
+  {
+    "id": "trout",
+    "name": "River Trout",
+    "category": "fish",
+    "family": "river_fish",
+    "rarity": "common",
+    "stackable": true,
+    "maxStack": 99,
+    "baseValue": 5,
+    "tags": ["food_ingredient", "cooking"],
+    "weight": 0.5,
+    "professionSource": "fishing",
+    "biomeSource": "river"
+  },
+  {
+    "id": "carp",
+    "name": "Common Carp",
+    "category": "fish",
+    "family": "river_fish",
+    "rarity": "common",
+    "stackable": true,
+    "maxStack": 99,
+    "baseValue": 4,
+    "tags": ["food_ingredient", "cooking"],
+    "weight": 0.8,
+    "professionSource": "fishing",
+    "biomeSource": "river"
+  },
+  {
+    "id": "catfish",
+    "name": "Channel Catfish",
+    "category": "fish",
+    "family": "lake_fish",
+    "rarity": "uncommon",
+    "stackable": true,
+    "maxStack": 99,
+    "baseValue": 12,
+    "tags": ["food_ingredient", "cooking"],
+    "weight": 2.2,
+    "professionSource": "fishing",
+    "biomeSource": "lake"
+  }
+]

@@ -10,6 +10,21 @@ The Last Guildmaster is a single-player RPG guild management desktop game built 
 
 ---
 
+## Canonical Documentation Rule
+
+All implementations must follow the design bibles in `docs/` as the canonical source of truth. If code conflicts with the design bibles, **the documentation wins** unless explicitly updated.
+
+### Priority Order of Truth:
+1. **[SAVE_SCHEMA.md](file:///c:/Repositories/The-Last-Guildmaster/docs/SAVE_SCHEMA.md)** — Serialization & Persistence Boundaries
+2. **[HERO.md](file:///c:/Repositories/The-Last-Guildmaster/docs/HERO.md)** — Character stats, jobs, derived attributes
+3. **[WORLD.md](file:///c:/Repositories/The-Last-Guildmaster/docs/WORLD.md)** — Ticks, hours, calendars, derived seasons
+4. **[PROFESSIONS.md](file:///c:/Repositories/The-Last-Guildmaster/docs/PROFESSIONS.md)** — Secondary crafting and gathering loops
+5. **[ITEMS.md](file:///c:/Repositories/The-Last-Guildmaster/docs/ITEMS.md)** — Gear registries, consumables, and stones
+6. **[BUILDINGS.md](file:///c:/Repositories/The-Last-Guildmaster/docs/BUILDINGS.md)** — Building upgrade limits and tags
+7. **System Code Files (`src/renderer/src/lib/systems/*`)** — Gameplay state logic
+
+---
+
 ## Process Architecture
 
 ```

@@ -1,0 +1,44 @@
+[
+  {
+    "id": "deer_hide",
+    "name": "Soft Deer Hide",
+    "category": "hide",
+    "family": "beast_hide",
+    "rarity": "common",
+    "stackable": true,
+    "maxStack": 99,
+    "baseValue": 8,
+    "tags": ["leatherworking", "tanning"],
+    "weight": 1.0,
+    "professionSource": "hunting",
+    "biomeSource": "forest"
+  },
+  {
+    "id": "boar_hide",
+    "name": "Thick Boar Hide",
+    "category": "hide",
+    "family": "beast_hide",
+    "rarity": "common",
+    "stackable": true,
+    "maxStack": 99,
+    "baseValue": 12,
+    "tags": ["leatherworking", "tanning"],
+    "weight": 2.0,
+    "professionSource": "hunting",
+    "biomeSource": "forest"
+  },
+  {
+    "id": "wolf_hide",
+    "name": "Shaggy Wolf Hide",
+    "category": "hide",
+    "family": "beast_hide",
+    "rarity": "uncommon",
+    "stackable": true,
+    "maxStack": 99,
+    "baseValue": 20,
+    "tags": ["leatherworking", "tanning"],
+    "weight": 1.5,
+    "professionSource": "hunting",
+    "biomeSource": "forest"
+  }
+]

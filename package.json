@@ -10,7 +10,8 @@
   "scripts": {
     "dev": "electron-vite dev",
     "build": "electron-vite build",
-    "postbuild": "electron-builder build --win",
+    "postbuild": "electron-builder build --win --dir",
+    "package": "node scripts/build-installer.js",
     "start": "electron-vite preview"
   },
   "devDependencies": {

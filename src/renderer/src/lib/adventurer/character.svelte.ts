@@ -15,7 +15,7 @@ import { Attributes } from './attributes.svelte'
 import { getJob, type Job } from './jobs'
 import { getTrait } from './traits'
 import { getSkill, type Skill } from './skills'
-import { Weapon, Armor, Accessory, EMPTY_STATS, type EquipmentStats } from './items.svelte'
+import { Weapon, Armor, Accessory, EMPTY_STATS, type EquipmentStats, WEAPONS, ARMORS, ACCESSORIES } from './items.svelte'
 import type { TraitId, CharacterData } from './types'
 
 /** XP required to reach the next level: 50 * level^1.8 */
@@ -172,35 +172,116 @@ export class Character {
   /** Export to plain JSON (for save system) */
   serialize(): CharacterData {
     return {
+      version: 1,
       id: this.id,
       name: this.name,
       level: this.level,
       xp: this.xp,
       jobId: this._jobId,
       traitId: this._traitId,
-      skillIds: [...this._skillIds],
-      baseStr: this.attributes.str,
-      baseInt: this.attributes.int,
-      baseDex: this.attributes.dex,
-      baseCon: this.attributes.con,
-      weaponId: this.weapon?.id ?? null,
-      armorId: this.armor?.id ?? null,
-      accessoryId: this.accessory?.id ?? null
+      attributes: {
+        baseStr: this.attributes.str,
+        baseInt: this.attributes.int,
+        baseDex: this.attributes.dex,
+        baseCon: this.attributes.con
+      },
+      equipment: {
+        weaponId: this.weapon?.id ?? null,
+        armorId: this.armor?.id ?? null,
+        accessoryId: this.accessory?.id ?? null
+      },
+      skills: [...this._skillIds],
+      professionSkills: [] // future-safe placeholder
     }
   }
 
-  /** Restore from saved JSON */
-  static deserialize(data: CharacterData): Character {
-    const char = new Character(data.name, data.jobId, data.traitId, data.id)
-    char.level = data.level
-    char.xp = data.xp
-    char.attributes.str = data.baseStr
-    char.attributes.int = data.baseInt
-    char.attributes.dex = data.baseDex
-    char.attributes.con = data.baseCon
-    char._skillIds = [...data.skillIds]
-    // Equipment restoration is handled by the inventory system
-    // which calls equipWeapon/equipArmor/equipAccessory after loading
+  /** Restore from saved JSON, with backward compatibility and migration */
+  static deserialize(data: any): Character {
+    if (!data) {
+      throw new Error('Cannot deserialize null or undefined character data.')
+    }
+
+    // 1. Determine if it's the old simplified mock adventurer
+    const isMock = !('baseStr' in data) && !('attributes' in data) && ('class' in data || 'jobId' in data)
+    
+    if (isMock) {
+      const name = data.name || 'Unknown Adventurer'
+      const jobId = data.class || data.jobId || 'squire'
+      const id = String(data.id || crypto.randomUUID())
+      const level = data.level || 1
+
+      // Construct default character and level them up to restore stats
+      const char = new Character(name, jobId, null, id)
+      char.level = 1
+      char.xp = 0
+      for (let lvl = 1; lvl < level; lvl++) {
+        char.levelUp()
+      }
+      return char
+    }
+
+    // 2. Determine if it's the older flat CharacterData (pre-refactor)
+    const isOldFlat = !('attributes' in data) && ('baseStr' in data)
+
+    let id = data.id || crypto.randomUUID()
+    let name = data.name || 'Unnamed'
+    let level = data.level || 1
+    let xp = data.xp || 0
+    let jobId = data.jobId || 'squire'
+    let traitId = data.traitId || null
+    
+    let baseStr = 10
+    let baseInt = 10
+    let baseDex = 10
+    let baseCon = 10
+    
+    let weaponId: string | null = null
+    let armorId: string | null = null
+    let accessoryId: string | null = null
+    
+    let skillIds: string[] = []
+
+    if (isOldFlat) {
+      baseStr = typeof data.baseStr === 'number' ? data.baseStr : 10
+      baseInt = typeof data.baseInt === 'number' ? data.baseInt : 10
+      baseDex = typeof data.baseDex === 'number' ? data.baseDex : 10
+      baseCon = typeof data.baseCon === 'number' ? data.baseCon : 10
+      
+      weaponId = data.weaponId || null
+      armorId = data.armorId || null
+      accessoryId = data.accessoryId || null
+      skillIds = Array.isArray(data.skillIds) ? [...data.skillIds] : []
+    } else {
+      // New structured layout
+      const attrs = data.attributes || {}
+      baseStr = typeof attrs.baseStr === 'number' ? attrs.baseStr : 10
+      baseInt = typeof attrs.baseInt === 'number' ? attrs.baseInt : 10
+      baseDex = typeof attrs.baseDex === 'number' ? attrs.baseDex : 10
+      baseCon = typeof attrs.baseCon === 'number' ? attrs.baseCon : 10
+
+      const eq = data.equipment || {}
+      weaponId = eq.weaponId || null
+      armorId = eq.armorId || null
+      accessoryId = eq.accessoryId || null
+
+      skillIds = Array.isArray(data.skills) ? [...data.skills] : []
+    }
+
+    const char = new Character(name, jobId, traitId, id)
+    char.level = level
+    char.xp = xp
+    char.attributes.str = baseStr
+    char.attributes.int = baseInt
+    char.attributes.dex = baseDex
+    char.attributes.con = baseCon
+    char._skillIds = skillIds
+
+    // Gear restoration from registries
+    if (weaponId && WEAPONS[weaponId]) char.weapon = WEAPONS[weaponId]()
+    if (armorId && ARMORS[armorId]) char.armor = ARMORS[armorId]()
+    if (accessoryId && ACCESSORIES[accessoryId]) char.accessory = ACCESSORIES[accessoryId]()
+    char.syncEquipmentStats()
+
     return char
   }
 }

@@ -32,18 +32,24 @@ export type SkillScaling = StatKey
 
 /** Serializable snapshot of a character */
 export interface CharacterData {
+  version: number
   id: string
   name: string
   level: number
   xp: number
   jobId: string
   traitId: TraitId | null
-  skillIds: string[]
-  baseStr: number
-  baseInt: number
-  baseDex: number
-  baseCon: number
-  weaponId: string | null
-  armorId: string | null
-  accessoryId: string | null
+  attributes: {
+    baseStr: number
+    baseInt: number
+    baseDex: number
+    baseCon: number
+  }
+  equipment: {
+    weaponId: string | null
+    armorId: string | null
+    accessoryId: string | null
+  }
+  skills: string[]
+  professionSkills: string[] // future-safe placeholder
 }

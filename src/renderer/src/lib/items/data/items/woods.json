@@ -1,0 +1,44 @@
+[
+  {
+    "id": "oak_wood",
+    "name": "Hard Oak Timber",
+    "category": "wood",
+    "family": "hardwood",
+    "rarity": "common",
+    "stackable": true,
+    "maxStack": 99,
+    "baseValue": 10,
+    "tags": ["construction_material", "crafting"],
+    "weight": 2.0,
+    "professionSource": "logging",
+    "biomeSource": "forest"
+  },
+  {
+    "id": "pine_wood",
+    "name": "Soft Pine Wood",
+    "category": "wood",
+    "family": "softwood",
+    "rarity": "common",
+    "stackable": true,
+    "maxStack": 99,
+    "baseValue": 8,
+    "tags": ["construction_material", "fuel"],
+    "weight": 1.5,
+    "professionSource": "logging",
+    "biomeSource": "forest"
+  },
+  {
+    "id": "birch_wood",
+    "name": "White Birch Log",
+    "category": "wood",
+    "family": "hardwood",
+    "rarity": "uncommon",
+    "stackable": true,
+    "maxStack": 99,
+    "baseValue": 15,
+    "tags": ["crafting", "bowyer"],
+    "weight": 1.8,
+    "professionSource": "logging",
+    "biomeSource": "forest"
+  }
+]
