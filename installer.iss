@@ -22,8 +22,8 @@ UninstallDisplayIcon={app}\The Last Guildmaster.exe
 UninstallDisplayName=The Last Guildmaster
 
 ; Game-themed installer artwork
-WizardImageFile=assets\installer-welcome.png
-WizardSmallImageFile=assets\installer-logo.png
+WizardImageFile=assets\installer-welcome.bmp
+WizardSmallImageFile=assets\installer-logo.bmp
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
