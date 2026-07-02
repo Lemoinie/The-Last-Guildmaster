@@ -44,8 +44,14 @@ function calculateSha512(filePath) {
 }
 
 async function run() {
-  console.log('Step 1: Running electron-builder to generate unpacked directory...')
+  console.log('Step 0: Compiling source code (npx electron-vite build)...')
+  execSync('npx electron-vite build', { stdio: 'inherit' })
+
+  console.log('\nStep 1: Running electron-builder to generate unpacked directory...')
   execSync('npx electron-builder build --win --dir', { stdio: 'inherit' })
+
+  console.log('\nWaiting 2 seconds for Windows file system flush...')
+  execSync('node -e "setTimeout(() => {}, 2000)"')
 
   console.log('\nStep 2: Locating Inno Setup Compiler (ISCC)...')
   const isccPath = findISCC()

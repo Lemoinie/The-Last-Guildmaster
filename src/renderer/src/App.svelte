@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from 'svelte'
   import MainMenu from './components/MainMenu.svelte'
   import LegalOverlay from './components/LegalOverlay.svelte'
   import SettingsModal from './components/SettingsModal.svelte'
@@ -10,6 +11,15 @@
   import { Game } from './lib/stores/game.svelte'
 
   const isConsoleWindow = window.location.search.includes('console=true') || window.location.hash.includes('console')
+
+  onMount(() => {
+    if (!isConsoleWindow) {
+      const debugConsole = localStorage.getItem('tlg_debug_console') === '1'
+      if (debugConsole && window.electronAPI) {
+        window.electronAPI.openDebugConsole()
+      }
+    }
+  })
 
   let currentScreen = $state<'menu' | 'game'>('menu')
   let showLegal = $state(false)

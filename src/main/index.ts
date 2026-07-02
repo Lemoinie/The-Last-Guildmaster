@@ -39,11 +39,14 @@ let win: BrowserWindow | null = null
 let debugConsoleWin: BrowserWindow | null = null
 
 function openDebugConsoleWindow() {
+  console.log('[MAIN] openDebugConsoleWindow called')
   if (debugConsoleWin && !debugConsoleWin.isDestroyed()) {
+    console.log('[MAIN] Debug console already active. Focusing.')
     debugConsoleWin.focus()
     return
   }
 
+  console.log('[MAIN] Instantiating new Debug Console BrowserWindow...')
   debugConsoleWin = new BrowserWindow({
     width: 850,
     height: 600,
@@ -61,6 +64,11 @@ function openDebugConsoleWindow() {
   })
 
   // Load console view
+  const consoleUrl = !app.isPackaged && process.env['ELECTRON_RENDERER_URL']
+    ? `${process.env['ELECTRON_RENDERER_URL']}?console=true`
+    : `file://${path.join(__dirname, '../renderer/index.html')}#console`
+
+  console.log('[MAIN] Loading Debug Console URL:', consoleUrl)
   if (!app.isPackaged && process.env['ELECTRON_RENDERER_URL']) {
     debugConsoleWin.loadURL(`${process.env['ELECTRON_RENDERER_URL']}?console=true`)
   } else {
@@ -70,12 +78,15 @@ function openDebugConsoleWindow() {
   }
 
   debugConsoleWin.on('closed', () => {
+    console.log('[MAIN] Debug Console window closed.')
     debugConsoleWin = null
   })
 }
 
 function closeDebugConsoleWindow() {
+  console.log('[MAIN] closeDebugConsoleWindow called')
   if (debugConsoleWin && !debugConsoleWin.isDestroyed()) {
+    console.log('[MAIN] Closing active debug console window.')
     debugConsoleWin.close()
   }
   debugConsoleWin = null
